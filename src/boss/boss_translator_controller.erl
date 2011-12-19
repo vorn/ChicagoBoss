@@ -23,7 +23,7 @@ init(Options) ->
                 {Lang, dict:from_list(boss_lang:extract_po_blocks(BossApp, Lang, comment))}
         end, boss_files:language_list(BossApp)),
     {ok, #state{
-            strings = dict:from_list(StringDictionaryList), 
+            strings = dict:from_list(StringDictionaryList),
             blocks = dict:from_list(BlockDictionaryList),
             application = BossApp }}.
 
@@ -62,7 +62,7 @@ handle_call({reload, Locale}, _From, State) ->
     },
     {reply, ok, NewState};
 handle_call(reload_all, From, State) ->
-    NewState = lists:foldr(fun(X, StateAcc) -> 
+    NewState = lists:foldr(fun(X, StateAcc) ->
                 {reply, ok, State1} = handle_call({reload, X}, From, StateAcc),
                 State1
         end, State, boss_files:language_list(State#state.application)),

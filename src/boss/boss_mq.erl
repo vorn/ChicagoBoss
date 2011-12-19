@@ -40,7 +40,7 @@ pull(Channel) ->
     pull(Channel, undefined).
 
 %% @spec pull( Channel::string(), Since::integer() | last | now ) -> {ok, Timestamp, [Message]} | {error, Reason}
-%% @doc Pull messages from the specified `Channel' after `Since' (a timestamp returned from a previous `pull'). 
+%% @doc Pull messages from the specified `Channel' after `Since' (a timestamp returned from a previous `pull').
 %% If no such messages are in the queue, blocks until a message is pushed to the queue.
 pull(Channel, Timestamp) ->
     pull(Channel, Timestamp, infinity).

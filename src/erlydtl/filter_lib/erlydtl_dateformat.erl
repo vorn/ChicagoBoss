@@ -95,9 +95,9 @@ tag_to_value($B, _, _) ->
 
 % ISO 8601 Format.
 tag_to_value($c, Date, Time) ->
-    tag_to_value($Y, Date, Time) ++ 
-    "-" ++ tag_to_value($m, Date, Time) ++ 
-    "-" ++ tag_to_value($d, Date, Time) ++ 
+    tag_to_value($Y, Date, Time) ++
+    "-" ++ tag_to_value($m, Date, Time) ++
+    "-" ++ tag_to_value($d, Date, Time) ++
     "T" ++ tag_to_value($H, Date, Time) ++
     ":" ++ tag_to_value($i, Date, Time) ++
     ":" ++ tag_to_value($s, Date, Time);
@@ -304,7 +304,7 @@ hour_24to12(H) when H < 13 -> H;
 hour_24to12(H) when H < 24 -> H - 12;
 hour_24to12(H) -> H.
 
-year_weeknum(Y,M,D) -> 
+year_weeknum(Y,M,D) ->
     First = (calendar:day_of_the_week(Y, 1, 1) rem 7) - 1,
     Wk = ((((calendar:date_to_gregorian_days(Y, M, D) -
             calendar:date_to_gregorian_days(Y, 1, 1)) + First) div 7)
@@ -316,7 +316,7 @@ year_weeknum(Y,M,D) ->
               _ -> Wk
             end
     end.
-   
+
 weeks_in_year(Y) ->
     D1 = calendar:day_of_the_week(Y, 1, 1),
     D2 = calendar:day_of_the_week(Y, 12, 31),
@@ -327,7 +327,7 @@ utc_diff({Y, M, D}, Time) when Y < 1970->
 utc_diff(Date, Time) ->
    LTime = {Date, Time},
    UTime = erlang:localtime_to_universaltime(LTime),
-   DiffSecs = calendar:datetime_to_gregorian_seconds(LTime) - 
+   DiffSecs = calendar:datetime_to_gregorian_seconds(LTime) -
        calendar:datetime_to_gregorian_seconds(UTime),
    trunc((DiffSecs / 3600) * 100).
 

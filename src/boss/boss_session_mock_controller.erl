@@ -7,7 +7,7 @@
 -record(boss_session, {sid, data}).
 
 -record(state, {
-        table, 
+        table,
         session_dict = dict:new(),
         ttl_tree = gb_trees:empty(),
         exp_time
@@ -29,7 +29,7 @@ handle_call({session_exists, SessionID}, _From, State) ->
         true ->
             NowSeconds = now_seconds(),
             Val = dict:fetch(SessionID, State#state.session_dict),
-            State#state{ 
+            State#state{
                 ttl_tree = boss_pq:move_value(Val, NowSeconds + State#state.exp_time, SessionID, State#state.ttl_tree),
                 session_dict = dict:store(SessionID,
                     NowSeconds + State#state.exp_time,
@@ -41,7 +41,7 @@ handle_call({session_exists, SessionID}, _From, State) ->
 handle_call({create_session, SessionID, Data}, _From, State) ->
     NowSeconds = now_seconds(),
     ets:insert(State#state.table, #boss_session{sid=SessionID, data=Data}),
-    NewState = State#state{ 
+    NewState = State#state{
         ttl_tree = boss_pq:insert_value(NowSeconds + State#state.exp_time, SessionID, State#state.ttl_tree),
         session_dict = dict:store(SessionID, NowSeconds + State#state.exp_time, State#state.session_dict)
     },
@@ -76,7 +76,7 @@ handle_call({delete_session, SessionID}, _From, State) ->
     ets:delete(State#state.table, SessionID),
     NewState = case dict:find(SessionID, State#state.session_dict) of
         {ok, Val} ->
-            State#state{ 
+            State#state{
                 ttl_tree = boss_pq:delete_value(Val, SessionID, State#state.ttl_tree),
                 session_dict = dict:erase(SessionID, State#state.session_dict)
             };
@@ -95,7 +95,7 @@ handle_call({delete_session_value, SessionID, Key}, _From, State) ->
                 false ->
                     ok
             end;
-        [] -> 
+        [] ->
             ok
     end,
     {reply, ok, State}.

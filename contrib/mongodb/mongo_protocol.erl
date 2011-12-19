@@ -105,7 +105,7 @@ get_reply (<<
 			cursornotfound = bool (CursorNotFound), queryerror = bool (QueryError), awaitcapable = bool (AwaitCapable),
 			cursorid = CursorId, startingfrom = StartingFrom, documents = Docs },
 		{ResponseTo, Reply, BinRest}.
-		
+
 get_docs (0, Bin) -> {[], Bin};
 get_docs (NumDocs, Bin) when NumDocs > 0 ->
 	{Doc, Bin1} = get_document (Bin),

@@ -82,7 +82,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 do_find(Dict, Type, Conditions, Max, Skip, SortBy, SortOrder) ->
-    lists:sublist(lists:nthtail(Skip, 
+    lists:sublist(lists:nthtail(Skip,
             lists:sort(fun(RecordA, RecordB) ->
                         AttributeA = sortable_attribute(RecordA, SortBy),
                         AttributeB = sortable_attribute(RecordB, SortBy),

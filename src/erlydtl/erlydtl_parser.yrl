@@ -5,7 +5,7 @@
 %%% @copyright 2008 Roberto Saccon, Evan Miller
 %%% @doc Template language grammar
 %%% @reference  See <a href="http://erlydtl.googlecode.com" target="_top">http://erlydtl.googlecode.com</a> for more information
-%%% @end  
+%%% @end
 %%%
 %%% The MIT License
 %%%
@@ -42,7 +42,7 @@ Nonterminals
     Values
     Variable
     Filter
-    
+
     AutoEscapeBlock
     AutoEscapeBraced
     EndAutoEscapeBraced
@@ -82,16 +82,16 @@ Nonterminals
     IfExpression
     ElseBraced
     EndIfBraced
-    
+
     IfEqualBlock
     IfEqualBraced
     IfEqualExpression
-    EndIfEqualBraced  
-    
+    EndIfEqualBraced
+
     IfNotEqualBlock
     IfNotEqualBraced
     IfNotEqualExpression
-    EndIfNotEqualBraced      
+    EndIfNotEqualBraced
 
     CustomTag
     Args
@@ -101,7 +101,7 @@ Nonterminals
     SSITag
 
     BlockTransBlock
-    TransTag    
+    TransTag
 
     TemplatetagTag
     Templatetag
@@ -114,7 +114,7 @@ Nonterminals
 
     CallTag
     CallWithTag
-    
+
     Unot.
 
 Terminals

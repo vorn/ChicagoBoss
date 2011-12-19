@@ -67,7 +67,7 @@ find_or_create_channel(Channel, #state{dict = Chan2Pid, max_age = MaxAge} = Stat
             {Pid, State};
         _ ->
             {ok, ChannelSup} = bmq_channel_sup:start_link(),
-            {ok, ChannelPid} = bmq_channel_sup:start_child(ChannelSup, 
+            {ok, ChannelPid} = bmq_channel_sup:start_child(ChannelSup,
                 [{max_age, MaxAge}, {supervisor, ChannelSup}, {channel, Channel}]),
             {ChannelPid, State#state{
                     dict = dict:store(Channel, ChannelPid, Chan2Pid)

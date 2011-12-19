@@ -22,7 +22,7 @@
 
 -export([connect/0, connect/1, put/3, putkeep/3, putcat/3, update/3, out/2,
 	 get/2, mget/2, vsiz/2, iterinit/1, iternext/1, fwmkeys/3, sync/1, optimize/2,
-	 vanish/1, rnum/1, size/1, stat/1, copy/2, restore/3, addint/3, adddouble/3, 
+	 vanish/1, rnum/1, size/1, stat/1, copy/2, restore/3, addint/3, adddouble/3,
 	 adddouble/4, setmst/3, setindex/3, query_limit/3, query_limit/4, query_add_condition/5,
 	 query_order/4, search/2, genuid/1, searchcount/2, searchout/2]).
 
@@ -34,7 +34,7 @@
 
 %% @spec connect() -> {ok, port()} | error()
 %%
-%% @doc 
+%% @doc
 %% Establish a connection to the tyrant service.
 %% @end
 connect() ->
@@ -42,7 +42,7 @@ connect() ->
 
 %% @spec connect(ConnectProps::proplist()) -> {ok, port()} | error()
 %%
-%% @doc 
+%% @doc
 %% Establish a connection to the tyrant service using properties in the
 %% ConnectProps proplist to determine the hostname, port number and tcp
 %% socket options for the connection.  Any missing parameters are filled
@@ -65,16 +65,16 @@ connect(ConnectProps) ->
 %% @spec mget(Socket::port(),
 %%            KeyList::keylist()) -> [{Key::binary(), Value::proplist()}] | error()
 %%
-%% @doc 
+%% @doc
 %% Get the values for a list of keys.  Due to the way that columns are returned
-%% via the tyrant protocol a null seperator is used to break 
+%% via the tyrant protocol a null seperator is used to break
 mget(Socket, KeyList) ->
     case principe:mget(Socket, KeyList) of
 	{error, Reason} ->
 	    {error, Reason};
 	MgetResults ->
 	    lists:keymap(fun(BinaryToSplit) ->
-				 columnize_values(binary_to_list(BinaryToSplit), [], []) 
+				 columnize_values(binary_to_list(BinaryToSplit), [], [])
 			 end, 2, MgetResults)
     end.
 
@@ -146,7 +146,7 @@ adddouble(Socket, Key, Double) ->
 %%
 %% @doc The raw adddouble function for those who need a bit more control on float adds.
 adddouble(Socket, Key, Integral, Fractional) ->
-    principe:adddouble(Socket, Key, Integral, Fractional).    
+    principe:adddouble(Socket, Key, Integral, Fractional).
 
 %% @spec iterinit(Socket::port()) -> ok | error()
 %%
@@ -178,7 +178,7 @@ fwmkeys(Socket, Prefix, MaxKeys) ->
 %% Get the size of the value for a given key.  The value returned for
 %% a key will be the total of the column size values, and each column
 %% size will be the size of the column name (in bytes), the size of the
-%% column value (in bytes), plus one for the internal null seperator 
+%% column value (in bytes), plus one for the internal null seperator
 %% between column name and value plus one for the null terminator for
 %% the column (i.e. length(ColumnName) + length(ColumnValue) + 2 for each
 %% column.)
@@ -221,23 +221,23 @@ size(Socket) ->
 stat(Socket) ->
     principe:stat(Socket).
 
-%% @spec copy(Socket::port(), 
+%% @spec copy(Socket::port(),
 %%            iolist()) -> ok | error()
 %%
 %% @doc Make a copy of the database file of the remote database.
 copy(Socket, PathName) ->
     principe:copy(Socket, PathName).
 
-%% @spec restore(Socket::port(), 
-%%               PathName::iolist(), 
+%% @spec restore(Socket::port(),
+%%               PathName::iolist(),
 %%               TimeStamp::integer) -> ok | error()
 %%
 %% @doc Restore the database to a particular point in time from the update log.
 restore(Socket, PathName, TimeStamp) ->
     principe:restore(Socket, PathName, TimeStamp).
 
-%% @spec setmst(Socket::port(), 
-%%              HostName::iolist(), 
+%% @spec setmst(Socket::port(),
+%%              HostName::iolist(),
 %%              Port::integer) -> ok | error()
 %%
 %% @doc Set the replication master of a remote database server.
@@ -248,8 +248,8 @@ setmst(Socket, HostName, Port) ->
 %%  Table functions
 %%====================================================================
 
-%% @spec put(Socket::port(), 
-%%           Key::key(), 
+%% @spec put(Socket::port(),
+%%           Key::key(),
 %%           Cols::coldata()) -> [] | error()
 %%
 %% @doc
@@ -259,23 +259,23 @@ put(Socket, Key, Cols) ->
     Data = encode_table(Cols),
     ?TSimple(<<"put">>, [Key | Data]).
 
-%% @spec putkeep(Socket::port(), 
-%%               Key::key(), 
+%% @spec putkeep(Socket::port(),
+%%               Key::key(),
 %%               Cols::coldata()) -> [] | error()
 %%
-%% @doc 
-%% Call the Tyrant server to add a set of column values for a given key.  Will 
+%% @doc
+%% Call the Tyrant server to add a set of column values for a given key.  Will
 %% return an error if Key is already in the remote database.
 %% @end
 putkeep(Socket, Key, Cols) ->
     Data = encode_table(Cols),
     ?TSimple(<<"putkeep">>, [Key | Data]).
 
-%% @spec putcat(Socket::port(), 
-%%              Key::key(), 
+%% @spec putcat(Socket::port(),
+%%              Key::key(),
 %%              Cols::coldata()) -> [] | error()
 %%
-%% @doc 
+%% @doc
 %% Concatenate a set of column values to the existing value of Key (or
 %% create a new entry for Key with the given column values if Key is not
 %% in the remote database.)  If any columns in Cols already have values
@@ -287,11 +287,11 @@ putcat(Socket, Key, Cols) ->
     Data = encode_table(Cols),
     ?TSimple(<<"putcat">>, [Key | Data]).
 
-%% @spec update(Socket::port(), 
-%%              Key::key(), 
+%% @spec update(Socket::port(),
+%%              Key::key(),
 %%              Cols::coldata()) -> [] | error()
 %%
-%% @doc 
+%% @doc
 %% Update a table entry by merging Cols into existing data for given key. The
 %% end result of this function should be to create a new entry for Key whose
 %% column values are the new data from the Cols parameter as well as any previous
@@ -316,26 +316,26 @@ update(Socket, Key, Cols) ->
     Data = encode_table(UpdatedProps),
     ?TSimple(<<"put">>, [Key | Data]).
 
-%% @spec out(Socket::port(), 
+%% @spec out(Socket::port(),
 %%           Key::key()) -> ok | error()
 %%
-%% @doc 
+%% @doc
 %% Remove a key from the remote database.  Will return an error if Key is
 %% not in the database.
 %% @end
 out(Socket, Key) ->
     ?TSimple(<<"out">>, [Key]).
 
-%% @spec get(Socket::port(), 
+%% @spec get(Socket::port(),
 %%           Key::key()) -> proplist() | error()
 %%
 %% @doc Get the value for a given key. Table data is returned in a proplist of
 %% {ColumnName, ColumnValue} tuples.
 %% @end
 get(Socket, Key) ->
-    case ?TRaw(<<"get">>, [Key]) of 
-	{error, Reason} -> 
-	    {error, Reason}; 
+    case ?TRaw(<<"get">>, [Key]) of
+	{error, Reason} ->
+	    {error, Reason};
 	RecList ->
 	    decode_table(RecList)
     end.
@@ -346,7 +346,7 @@ get(Socket, Key) ->
 %%
 %% @doc
 %% Tell the tyrant server to build an index for a column.  The ColName
-%% should be either the atom "primary" (to index on the primary key) or a 
+%% should be either the atom "primary" (to index on the primary key) or a
 %% iolist() that names the column to be indexed. Type should be an atom
 %% selected from decimal (index column as decimal data), lexical (index as
 %% character/string data) or void (remove an existing index for ColName).
@@ -381,13 +381,13 @@ genuid(Socket) ->
 %% be bypassed.
 %% @end
 query_add_condition(_Sock, Query, ColName, Op, ExprList) when is_list(ExprList) ->
-    [{{add_cond, ColName, Op, ExprList}, 
-      ["addcond", 
-       ?NULL, 
-       ColName, 
-       ?NULL, 
-       integer_to_list(add_condition_op_val(Op)), 
-       ?NULL, 
+    [{{add_cond, ColName, Op, ExprList},
+      ["addcond",
+       ?NULL,
+       ColName,
+       ?NULL,
+       integer_to_list(add_condition_op_val(Op)),
+       ?NULL,
        convert_query_exprlist(ExprList)]
      } | Query].
 
@@ -398,10 +398,10 @@ query_add_condition(_Sock, Query, ColName, Op, ExprList) when is_list(ExprList) 
 %% @doc Set a limit on the number of returned values for Query, skip the first Skip records.
 query_limit(_Sock, Query, Max, Skip) when is_integer(Max), Max > 0, is_integer(Skip), Skip >= 0 ->
     LimitKey = {set_limit, Max, Skip},
-    LimitValue = ["setlimit", 
-		?NULL, 
-		integer_to_list(Max), 
-		?NULL, 
+    LimitValue = ["setlimit",
+		?NULL,
+		integer_to_list(Max),
+		?NULL,
 		integer_to_list(Skip)],
     case lists:keysearch(set_limit, 1, proplists:get_keys(Query)) of
 	false ->
@@ -426,10 +426,10 @@ query_limit(_Sock, Query, Max) ->
 %% @doc Set the order for returned values in Query.
 query_order(_Sock, Query, primary, Type) when is_atom(Type) ->
     OrderKey = {set_order, primary, Type},
-    OrderValue = ["setorder", 
-		  ?NULL, 
+    OrderValue = ["setorder",
+		  ?NULL,
 		  "",
-		  ?NULL, 
+		  ?NULL,
 		  integer_to_list(order_request_val(Type))],
     case lists:keysearch(set_order, 1, proplists:get_keys(Query)) of
 	false ->
@@ -439,10 +439,10 @@ query_order(_Sock, Query, primary, Type) when is_atom(Type) ->
     end;
 query_order(_Sock, Query, ColName, Type) when is_atom(Type) ->
     OrderKey = {set_order, ColName, Type},
-    OrderValue = ["setorder", 
-		  ?NULL, 
-		  ColName, 
-		  ?NULL, 
+    OrderValue = ["setorder",
+		  ?NULL,
+		  ColName,
+		  ?NULL,
 		  integer_to_list(order_request_val(Type))],
     case lists:keysearch(set_order, 1, proplists:get_keys(Query)) of
 	false ->
@@ -488,7 +488,7 @@ searchout(Socket, Query) ->
 %% tblrescols(Socket, TblQuery) ->
 %%     void.
 
- 
+
 %%====================================================================
 %%  Table utility functions
 %%====================================================================
@@ -570,7 +570,7 @@ order_request_val(Type) ->
 
 %% @spec convert_query_exprlist(query_expr()) -> [string()]
 %%
-%% @private 
+%% @private
 %% Convert query expression list to comma-seperated list of string values.
 convert_query_exprlist(ExprList) ->
     convert_query_exprlist(ExprList, []).
@@ -670,10 +670,10 @@ putkeep_test() ->
 
 putcat_test() ->
     Socket = test_setup_with_data(),
-    ?assertMatch([{<<"age">>, <<"24">>}, {<<"name">>, <<"carol">>}], 
+    ?assertMatch([{<<"age">>, <<"24">>}, {<<"name">>, <<"carol">>}],
 		 lists:sort(?MODULE:get(Socket, "rec3"))),
     ok = ?MODULE:putcat(Socket, "rec3", [{"sport", "golf"}]),
-    ?assertMatch([{<<"age">>, <<"24">>}, {<<"name">>, <<"carol">>}, {<<"sport">>, <<"golf">>}], 
+    ?assertMatch([{<<"age">>, <<"24">>}, {<<"name">>, <<"carol">>}, {<<"sport">>, <<"golf">>}],
 		 lists:sort(?MODULE:get(Socket, "rec3"))),
     ok.
 
@@ -749,7 +749,7 @@ stat_test() ->
 mget_test() ->
     Socket = test_setup_with_data(),
     MGetData = ?MODULE:mget(Socket, ["rec1", "rec3", "rec5"]),
-    ?assertMatch([{<<"name">>, <<"alice">>},{<<"sport">>, <<"baseball">>}], 
+    ?assertMatch([{<<"name">>, <<"alice">>},{<<"sport">>, <<"baseball">>}],
 		 lists:sort(proplists:get_value(<<"rec1">>, MGetData))),
     ?assert(proplists:get_value(<<"rec2">>, MGetData) =:= undefined),
     ?assertMatch([<<"rec1">>, <<"rec3">>, <<"rec5">>], lists:sort(proplists:get_keys(MGetData))),
@@ -761,8 +761,8 @@ iter_test() ->
     ok = ?MODULE:iterinit(Socket),
     First = ?MODULE:iternext(Socket),
     ?assert(lists:member(First, AllKeys)),
-    IterAll = lists:foldl(fun(_Count, Acc) -> [?MODULE:iternext(Socket) | Acc] end, 
-			  [First], 
+    IterAll = lists:foldl(fun(_Count, Acc) -> [?MODULE:iternext(Socket) | Acc] end,
+			  [First],
 			  lists:seq(1, length(AllKeys)-1)),
     ?assertMatch(AllKeys, lists:sort(IterAll)),
     ?assertMatch({error, _}, ?MODULE:iternext(Socket)),
@@ -788,7 +788,7 @@ query_generation_test() ->
 		?MODULE:query_limit([{{set_limit, blah}, ["foo"]}], 4, 1)),
     ?assertMatch([{{add_cond, "foo", str_eq, ["bar"]}, ["addcond", <<0:8>>, "foo", <<0:8>>, "0", <<0:8>>, ["bar"]]}],
 		 ?MODULE:query_condition([], "foo", str_eq, ["bar"])),
-    ?assertMatch([{{add_cond, "foo", {no, str_and}, ["bar","baz"]}, 
+    ?assertMatch([{{add_cond, "foo", {no, str_and}, ["bar","baz"]},
 		   ["addcond", <<0:8>>, "foo", <<0:8>>, "16777220", <<0:8>>, ["bar",",","baz"]]}],
 		 ?MODULE:query_condition([], "foo", {no, str_and}, ["bar", "baz"])),
     ok.
@@ -812,7 +812,7 @@ search_test() ->
 searchcount_test() ->
     Socket = test_setup_with_data(),
     Query1 = ?MODULE:query_condition([], "name", str_or, ["alice", "bob"]),
-    ?assert(?MODULE:searchcount(Socket, Query1) =:= 2), 
+    ?assert(?MODULE:searchcount(Socket, Query1) =:= 2),
     ok.
 
 searchout_test() ->

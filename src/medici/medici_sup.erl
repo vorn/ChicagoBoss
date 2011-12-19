@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% File    : medici_sup.erl
 %%% Author  : Jim McCoy <>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created :  6 May 2009 by Jim McCoy <>
 %%%-------------------------------------------------------------------
@@ -37,9 +37,9 @@ start_link(_StartArgs) ->
 %% Func: init(Args) -> {ok,  {SupFlags,  [ChildSpec]}} |
 %%                     ignore                          |
 %%                     {error, Reason}
-%% Description: Whenever a supervisor is started using 
-%% supervisor:start_link/[2,3], this function is called by the new process 
-%% to find out about restart strategy, maximum restart frequency and child 
+%% Description: Whenever a supervisor is started using
+%% supervisor:start_link/[2,3], this function is called by the new process
+%% to find out about restart strategy, maximum restart frequency and child
 %% specifications.
 %%--------------------------------------------------------------------
 init(MediciOpts) ->
@@ -61,13 +61,13 @@ init(MediciOpts) ->
     end,
     MediciConnSupervisor = {connection_supervisor,
 			    {medici_conn_sup, start_link, [MediciOpts]},
-			    permanent, 
-			    infinity, 
-			    supervisor, 
+			    permanent,
+			    infinity,
+			    supervisor,
 			    [medici_conn_sup]},
     case proplists:get_value(run_server, MediciOpts) of
 	undefined ->
-	    {ok,{{one_for_all,1,10}, [MediciController, 
+	    {ok,{{one_for_all,1,10}, [MediciController,
 				      MediciConnSupervisor]}};
 	_ ->
 	    MediciPortSupervisor = {port_supervisor,
@@ -76,7 +76,7 @@ init(MediciOpts) ->
 				    infinity,
 				    supervisor,
 				    [medici_port_sup]},
-	    {ok,{{one_for_all,1,10}, [MediciController, 
+	    {ok,{{one_for_all,1,10}, [MediciController,
 				      MediciConnSupervisor,
 				      MediciPortSupervisor]}}
     end.

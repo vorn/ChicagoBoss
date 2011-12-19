@@ -41,11 +41,11 @@ scan("#}" ++ T, Scanned, {Row, Column}, {in_comment, "#}"}) ->
     scan(T, append_text("#}", {Row, Column}, Scanned), {Row, Column + length("#}")}, in_text);
 
 scan("<!--{% blocktrans " ++ T, Scanned, {Row, Column}, in_text) ->
-    scan(T, [{open_blocktrans, {Row, Column}, ""} | Scanned], 
+    scan(T, [{open_blocktrans, {Row, Column}, ""} | Scanned],
         {Row, Column + length("<!--{% blocktrans ")}, {in_code, "%}-->"});
 
 scan("{% blocktrans " ++ T, Scanned, {Row, Column}, in_text) ->
-    scan(T, [{open_blocktrans, {Row, Column}, ""} | Scanned], 
+    scan(T, [{open_blocktrans, {Row, Column}, ""} | Scanned],
         {Row, Column + length("{% blocktrans ")}, {in_code, "%}"});
 
 scan("{% endblocktrans %}" ++ T, Scanned, {Row, Column}, in_text) ->

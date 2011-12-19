@@ -14,7 +14,7 @@
 %%% @copyright Copyright (c) 2009, Jim McCoy.  All Rights Reserved.
 %%%
 %%% @doc
-%%% The medici_native conn module handles a single principe connection to the 
+%%% The medici_native conn module handles a single principe connection to the
 %%% Tyrant remote database.  If is a simple gen_server that will dispatch requests
 %%% to the remote database and exit if its connection to the remote database
 %%% closes so that its supervisor can start another connection handler.  This
@@ -49,7 +49,7 @@ start_link(MediciOpts) ->
 %%====================================================================
 
 %% @spec init(Args) -> {ok, State} | {stop, Reason}
-%% @private 
+%% @private
 %% Initiates the server. Makes sure the remote database is in either
 %% hash or b-tree mode.
 %% @end
@@ -70,7 +70,7 @@ init(ClientProps) ->
     end.
 
 %% @spec handle_call(Request, From, State) -> {stop, Reason, State}
-%% @private 
+%% @private
 %% Handle call messages. Since none are expected (all calls should come in
 %% as casts) a call message will result in termination of the server.
 %% @end
@@ -80,9 +80,9 @@ handle_call(Request, _From, State) ->
 
 %% @spec handle_cast(Msg, State) -> {noreply, State} | {stop, Reason, State}
 %% @private
-%% Handle cast messages to forward to the remote database. This section 
-%% differs from the regular medici_conn module in that calls which return 
-%% data are given their own functions so that the data can be converted 
+%% Handle cast messages to forward to the remote database. This section
+%% differs from the regular medici_conn module in that calls which return
+%% data are given their own functions so that the data can be converted
 %% back to erlang terms prior to being sent back to the requestor.
 %% @end
 handle_cast(stop, State) ->
@@ -195,7 +195,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 %% @spec terminate(Reason, State) -> void()
-%% @private 
+%% @private
 %% Server termination.  Will sync remote database, close connection, and
 %% notify controller that it is shutting down.
 %% @end
@@ -233,19 +233,19 @@ get_db_type(Socket) when is_port(Socket) ->
 		    Endian = big
 	    end,
 	    case proplists:get_value(type, StatList) of
-		"on-memory hash" -> 
+		"on-memory hash" ->
 		    Type = hash;
-		"table" -> 
+		"table" ->
 		    Type = table;
-		"on-memory tree" -> 
+		"on-memory tree" ->
 		    Type = tree;
-		"B+ tree" -> 
+		"B+ tree" ->
 		    Type = tree;
 		"hash" ->
 		    Type = hash;
 		"fixed-length" ->
 		    Type = fixed;
-		_ -> 
+		_ ->
 		    ?DEBUG_LOG("~p:get_db_type returned ~p~n", [?MODULE, proplists:get_value(type, StatList)]),
 		    Type = error
 	    end,
@@ -254,7 +254,7 @@ get_db_type(Socket) when is_port(Socket) ->
 		    {error, unknown_db_type};
 		_ ->
 		    {ok, Endian, Type}
-	    end	    
+	    end
     end.
 
 tune_db(State) ->
@@ -265,7 +265,7 @@ tune_db(State) ->
 	    {error, Reason};
 	StatList ->
 	    case proplists:get_value(type, StatList) of
-		"on-memory hash" -> 
+		"on-memory hash" ->
 		    Records = list_to_integer(proplists:get_value(rnum, StatList)),
 		    BnumInt = Records * 4,
 		    TuningParam = "bnum=" ++ integer_to_list(BnumInt),
@@ -275,7 +275,7 @@ tune_db(State) ->
 		    BnumInt = Records * 4,
 		    TuningParam = "bnum=" ++ integer_to_list(BnumInt),
 		    principe:optimize(State#state.socket, TuningParam);
-		_Other -> 
+		_Other ->
 		    ?DEBUG_LOG("Can't tune a db of type ~p yet", [_Other]),
 		    {error, db_type_unsupported_for_tuning}
 	    end

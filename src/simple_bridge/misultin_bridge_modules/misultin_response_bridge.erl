@@ -3,9 +3,9 @@
 -include_lib ("simple_bridge.hrl").
 -export ([build_response/2]).
 
-build_response({Req, DocRoot}, Res) ->	
+build_response({Req, DocRoot}, Res) ->
     % Some values...
-    Code = Res#response.statuscode, 
+    Code = Res#response.statuscode,
     case Res#response.data of
         {data, Body} ->
 
@@ -13,7 +13,7 @@ build_response({Req, DocRoot}, Res) ->
             Headers = lists:flatten([
                 [{X#header.name, X#header.value} || X <- Res#response.headers],
                 [create_cookie_header(X) || X <- Res#response.cookies]
-            ]),		
+            ]),
 
             % Send the misultin response...
             Req:respond(Code, Headers, Body);

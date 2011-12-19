@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% File    : medici_conn_sup.erl
 %%% Author  : Jim McCoy <>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created :  6 May 2009 by Jim McCoy <>
 %%%-------------------------------------------------------------------
@@ -37,23 +37,23 @@ start_link(StartArgs) ->
 %% Func: init(Args) -> {ok,  {SupFlags,  [ChildSpec]}} |
 %%                     ignore                          |
 %%                     {error, Reason}
-%% Description: Whenever a supervisor is started using 
-%% supervisor:start_link/[2,3], this function is called by the new process 
-%% to find out about restart strategy, maximum restart frequency and child 
+%% Description: Whenever a supervisor is started using
+%% supervisor:start_link/[2,3], this function is called by the new process
+%% to find out about restart strategy, maximum restart frequency and child
 %% specifications.
 %%--------------------------------------------------------------------
 init(MediciOpts) ->
     ClientCount = proplists:get_value(num_connections, MediciOpts, ?NUM_CLIENTS),
     case proplists:get_bool(native, MediciOpts) of
 	false ->
-	    ChildList = [{list_to_atom("medici_connection_"++integer_to_list(ChildNum)), 
+	    ChildList = [{list_to_atom("medici_connection_"++integer_to_list(ChildNum)),
 			  {medici_conn, start_link, [MediciOpts]},
 			  permanent,
 			  2000,
 			  worker,
 			  [medici_conn]} || ChildNum <- lists:seq(1, ClientCount)];
 	true ->
-	    ChildList = [{list_to_atom("medici_connection_"++integer_to_list(ChildNum)), 
+	    ChildList = [{list_to_atom("medici_connection_"++integer_to_list(ChildNum)),
 			  {medici_native_conn, start_link, [MediciOpts]},
 			  permanent,
 			  2000,

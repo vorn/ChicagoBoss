@@ -245,8 +245,8 @@ escape_value(Value) ->
 
 escape_value([], Acc) ->
     lists:reverse(Acc);
-escape_value([H|T], Acc) when H=:=$+; H=:=$-; H=:=$&; H=:=$|; H=:=$!; H=:=$(; H=:=$); 
-                              H=:=$[; H=:=$]; H=:=${; H=:=$}; H=:=$^; H=:=$"; H=:=$~; 
+escape_value([H|T], Acc) when H=:=$+; H=:=$-; H=:=$&; H=:=$|; H=:=$!; H=:=$(; H=:=$);
+                              H=:=$[; H=:=$]; H=:=${; H=:=$}; H=:=$^; H=:=$"; H=:=$~;
                               H=:=$*; H=:=$?; H=:=$:; H=:=$\\ ->
     escape_value(T, lists:reverse([$\\, H], Acc));
 escape_value([H|T], Acc) ->

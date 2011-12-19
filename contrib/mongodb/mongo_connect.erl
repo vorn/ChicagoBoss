@@ -59,7 +59,7 @@ send ({Db, Conn}, Notices) ->
 -spec messages_binary (mongo_protocol:db(), [mongo_protocol:message()]) -> {binary(), mongo_protocol:requestid()}.
 % Binary representation of messages
 messages_binary (Db, Messages) ->
-	Build = fun (Message, {Bin, _}) -> 
+	Build = fun (Message, {Bin, _}) ->
 		RequestId = mongodb_app:next_requestid(),
 		MBin = mongo_protocol:put_message (Db, Message, RequestId),
 		{<<Bin /binary, ?put_int32 (byte_size (MBin) + 4), MBin /binary>>, RequestId} end,

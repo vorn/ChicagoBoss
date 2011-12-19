@@ -2,7 +2,7 @@
 % MISULTIN - Http(s)
 %
 % >-|-|-(°>
-% 
+%
 % Copyright (C) 2010, Roberto Ostinelli <roberto@ostinelli.net>, Sean Hinde.
 % All rights reserved.
 %
@@ -10,7 +10,7 @@
 % <http://www.trapexit.org/A_fast_web_server_demonstrating_some_undocumented_Erlang_features>
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -74,7 +74,7 @@ handle_data(Sock, SocketMode, ListenPort, PeerAddr, PeerPort, PeerCert, RecvTime
 
 % ============================ \/ INTERNAL FUNCTIONS =======================================================
 
-% REQUEST: wait for a HTTP Request line. Transition to state headers if one is received. 
+% REQUEST: wait for a HTTP Request line. Transition to state headers if one is received.
 request(#c{sock = Sock, socket_mode = SocketMode, recv_timeout = RecvTimeout} = C, Req) ->
 	misultin_socket:setopts(Sock, [{active, once}, {packet, http}], SocketMode),
 	receive
@@ -138,7 +138,7 @@ headers(#c{sock = Sock, socket_mode = SocketMode, recv_timeout = RecvTimeout, ws
 			CheckWs = case WsLoop of
 				none -> false;
 				_Function -> misultin_websocket:check(Path, Headers)
-			end,	
+			end,
 			case CheckWs of
 				false ->
 					?LOG_DEBUG("normal http request received", []),
@@ -212,7 +212,7 @@ body(#c{sock = Sock, socket_mode = SocketMode, recv_timeout = RecvTimeout} = C, 
 						keep_alive ->
 							misultin_socket:setopts(Sock, [{packet, http}], SocketMode),
 							request(C, #req{socket = Sock, socket_mode = SocketMode, peer_addr = Req#req.peer_addr, peer_port = Req#req.peer_port, peer_cert = Req#req.peer_cert})
-					end;					
+					end;
 				Len ->
 					?LOG_DEBUG("parsing POST content in body of request", []),
 					misultin_socket:setopts(Sock, [{packet, raw}, {active, false}], SocketMode),
@@ -229,7 +229,7 @@ body(#c{sock = Sock, socket_mode = SocketMode, recv_timeout = RecvTimeout} = C, 
 							end;
 						{error, timeout} ->
 							?LOG_DEBUG("request timeout, sending error", []),
-							misultin_socket:send(Sock, misultin_utility:get_http_status_code(408), SocketMode); 
+							misultin_socket:send(Sock, misultin_utility:get_http_status_code(408), SocketMode);
 						_Other ->
 							?LOG_DEBUG("tcp error treating post data: ~p, send bad request error back", [_Other]),
 							misultin_socket:send(Sock, misultin_utility:get_http_status_code(400), SocketMode)
@@ -428,7 +428,7 @@ compress_body(RequestHeaders, BodyBinary, true) ->
 compress_body(_RequestHeaders, BodyBinary, false) ->
 	?LOG_DEBUG("building binary body without compression", []),
 	{[], BodyBinary}.
-			
+
 % Function: -> binary()
 % Description: Compress body.
 encode(deflate, BodyBinary) ->
@@ -471,9 +471,9 @@ get_accepted_encodings(AcceptEncodingHeader) ->
 	Encodings0 = lists:foldl(F, [], string:tokens(Header, ",")),
 	% sort
 	lists:sort(fun({_E1, Q1}, {_E2, Q2}) -> Q1 > Q2 end, Encodings0).
-			
+
 % Function: -> number() | not_a_number
-% Description: Converts a list to a number.		
+% Description: Converts a list to a number.
 list_to_number(L) ->
 	case catch list_to_float(L) of
 		{'EXIT', _} ->

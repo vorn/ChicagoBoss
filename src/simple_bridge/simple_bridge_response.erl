@@ -22,7 +22,7 @@ make_nocatch(Mod, ResponseData) ->
     simple_bridge_response_wrapper:new(Mod, ResponseData, #response{}).
 
 behaviour_info(callbacks) -> [
-    {build_response, 2} 
+    {build_response, 2}
 ];
 
 behaviour_info(_) -> ok.

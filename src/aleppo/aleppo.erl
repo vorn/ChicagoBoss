@@ -1,4 +1,4 @@
-% Aleppo: ALternative Erlang Pre-ProcessOr 
+% Aleppo: ALternative Erlang Pre-ProcessOr
 -module(aleppo).
 -export([process_file/1, process_tokens/1, process_tokens/2, scan_file/1]).
 
@@ -36,23 +36,23 @@ process_tree(ParseTree, Options) ->
     {Dict0, IncludeTrail, IncludeDirs, TokenAcc} = case proplists:get_value(file, Options) of
         undefined -> {dict:new(), [], ["."], []};
         FileName -> {dict:store('FILE', [{string, 1, FileName}], dict:new()),
-                [filename:absname(FileName)], 
+                [filename:absname(FileName)],
                 [".", filename:dirname(FileName)],
                 lists:reverse(file_attribute_tokens(FileName, 1))}
     end,
 
     Dict1 = case proplists:get_value(module, Options) of
         undefined -> Dict0;
-        Module -> 
-            dict:store('MODULE', [{atom, 1, Module}], 
+        Module ->
+            dict:store('MODULE', [{atom, 1, Module}],
                 dict:store('MODULE_NAME', [{string, 1, atom_to_list(Module)}], Dict0))
     end,
 
     Dict2 = dict:store('MACHINE',  [{atom, 1, list_to_atom(erlang:system_info(machine))}], Dict1),
 
-    Context = #ale_context{ 
-        include_trail = IncludeTrail, 
-        include_dirs = IncludeDirs ++ proplists:get_value(include, Options, []), 
+    Context = #ale_context{
+        include_trail = IncludeTrail,
+        include_dirs = IncludeDirs ++ proplists:get_value(include, Options, []),
         macro_dict = Dict2 },
 
     case catch process_tree(ParseTree, TokenAcc, Context) of
@@ -138,13 +138,13 @@ process_inclusion(FileName, Line, Context) ->
                     end,
                     Dict1 = dict:store('FILE', [{string, 1, FileName}], Context#ale_context.macro_dict),
                     TokenAcc = lists:reverse(file_attribute_tokens(FileName, 1)),
-                    {Dict2, IncludedTokens} = process_tree(ParseTreeNoEOF, TokenAcc, 
-                        Context#ale_context{ 
-                            macro_dict = Dict1, 
+                    {Dict2, IncludedTokens} = process_tree(ParseTreeNoEOF, TokenAcc,
+                        Context#ale_context{
+                            macro_dict = Dict1,
                             include_trail = [FileName|Context#ale_context.include_trail]}),
                     case ThisFile of
                         undefined -> {Dict2, IncludedTokens};
-                        [{string, _Loc, ThisFileName}] -> 
+                        [{string, _Loc, ThisFileName}] ->
                             {dict:store('FILE', ThisFile, Dict2),
                                 lists:reverse(file_attribute_tokens(ThisFileName, Line)) ++ IncludedTokens}
                     end;

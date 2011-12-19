@@ -27,7 +27,7 @@ extract_routes_from_clauses(Name, Clauses) ->
 
 extract_routes_from_clauses(_, [], Acc) ->
     lists:reverse(Acc);
-extract_routes_from_clauses(Name, [{clause, _, 
+extract_routes_from_clauses(Name, [{clause, _,
             [_, URLTokens|_], _, _}|Rest], Acc) ->
     Route = route_from_token_ast(URLTokens),
     extract_routes_from_clauses(Name, Rest, [{Name, Route}|Acc]);

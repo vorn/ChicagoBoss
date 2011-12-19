@@ -32,7 +32,7 @@ mxlookup(Domain) ->
 	case whereis(inet_db) of
 		P when is_pid(P) ->
 			ok;
-		_ -> 
+		_ ->
 			inet_db:start()
 	end,
 	case lists:keyfind(nameserver, 1, inet_db:get_rc()) of

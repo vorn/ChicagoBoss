@@ -5,19 +5,19 @@
 -export([start/0, start/1, stop/0]).
 
 -export([
-        find/1, 
-        find/2, 
-        find/3, 
-        find/4, 
-        find/5, 
+        find/1,
+        find/2,
+        find/3,
+        find/4,
+        find/5,
         find/6,
         count/1,
         count/2,
-        counter/1, 
-        incr/1, 
-        incr/2, 
-        delete/1, 
-        save_record/1, 
+        counter/1,
+        incr/1,
+        incr/2,
+        delete/1,
+        save_record/1,
         push/0,
         pop/0,
         depth/0,
@@ -138,10 +138,10 @@ delete(Key) ->
     AboutToDelete = boss_db:find(Key),
     boss_record_lib:run_before_delete_hooks(AboutToDelete),
     case gen_server:call(boss_db, {delete, Key}, ?DEFAULT_TIMEOUT) of
-        ok -> 
+        ok ->
             boss_news:deleted(Key, AboutToDelete:attributes()),
             ok;
-        RetVal -> 
+        RetVal ->
             RetVal
     end.
 
@@ -196,10 +196,10 @@ save_record(Record) ->
 
 %% @spec validate_record( BossRecord ) -> ok | {error, [ErrorMessages]}
 %% @doc Validate the given BossRecord without saving it in the database.
-%% `ErrorMessages' are generated from the list of tests returned by the BossRecord's 
+%% `ErrorMessages' are generated from the list of tests returned by the BossRecord's
 %% `validation_tests/0' function (if defined). The returned list should consist of
-%% `{TestFunction, ErrorMessage}' tuples, where `TestFunction' is a fun of arity 0 
-%% that returns `true' if the record is valid or `false' if it is invalid. 
+%% `{TestFunction, ErrorMessage}' tuples, where `TestFunction' is a fun of arity 0
+%% that returns `true' if the record is valid or `false' if it is invalid.
 %% `ErrorMessage' should be a (constant) string which will be included in `ErrorMessages'
 %% if the `TestFunction' returns `false' on this particular BossRecord.
 validate_record(Record) ->

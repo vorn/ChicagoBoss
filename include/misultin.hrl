@@ -1,11 +1,11 @@
 % ==========================================================================================================
 % MISULTIN - Include file
-% 
+%
 % Copyright (C) 2009, Sean Hinde, Roberto Ostinelli <roberto@ostinelli.net>
 % All rights reserved.
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -58,7 +58,7 @@
 	compress,					% send compressed output if supported by browser
 	stream_support,				% stream support option
 	loop,						% the fun handling requests
-	ws_loop						% the fun handling websockets 
+	ws_loop						% the fun handling websockets
 }).
 
 % Request

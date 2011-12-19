@@ -2,12 +2,12 @@
 % MISULTIN - Websocket Request
 %
 % >-|-|-(°>
-% 
+%
 % Copyright (C) 2010, Roberto Ostinelli <roberto@ostinelli.net>.
 % All rights reserved.
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -60,11 +60,11 @@ get(host) ->
 	Ws#ws.host;
 get(path) ->
 	Ws#ws.path.
-	
+
 % send data
 send(Data) ->
 	SocketPid ! {send, Data}.
-		
+
 % ============================ /\ API ======================================================================
 
 

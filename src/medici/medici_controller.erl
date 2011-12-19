@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% File    : medici_controller.erl
 %%% Author  : Jim McCoy <>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created :  5 May 2009 by Jim McCoy <>
 %%%-------------------------------------------------------------------
@@ -103,7 +103,7 @@ handle_info({client_start, Pid}, State) ->
 handle_info({client_end, Pid}, State) ->
     {noreply, State#state{clients=lists:delete(Pid, State#state.clients)}};
 %% The retries should either do a hard-kill of the clients it is eliminating
-%% from the list, but 
+%% from the list, but
 handle_info({retry, Pid, _OldReply, OldRequest}, State) when length(State#state.clients) > 1 ->
     dispatch_request(OldRequest, State#state{clients=lists:delete(Pid, State#state.clients)});
 handle_info({retry, Pid, OldReply, OldRequest}, State) ->

@@ -15,7 +15,7 @@
 %%%
 %%% @doc
 %%% This module provides the primary API for interfacing with the
-%%% medici application. These functions assume you are using the default 
+%%% medici application. These functions assume you are using the default
 %%% registered name for the service and that you know what sort of remote database
 %%% you are talking to (e.g. don't make table-specific calls to a hash
 %%% database.) If you need byte-order specific ops, want to register the
@@ -30,9 +30,9 @@
 -export([start/0, start/1, stop/0]).
 
 %% Basic API exports
--export([put/2, putkeep/2, putcat/2, putshl/3, putnr/2, out/1, get/1, 
+-export([put/2, putkeep/2, putcat/2, putshl/3, putnr/2, out/1, get/1,
 	 mget/1, vsiz/1, iterinit/0, iternext/0, fwmkeys/2, addint/2,
-	 adddouble/2, adddouble/3, sync/0, vanish/0, rnum/0, size/0, 
+	 adddouble/2, adddouble/3, sync/0, vanish/0, rnum/0, size/0,
 	 stat/0, copy/1, restore/2, setmst/2, optimize/1]).
 
 %% Table API exports
@@ -50,7 +50,7 @@ start() ->
 
 %% @spec start(StartupOptions::proplist()) -> {ok, Pid} | Error:term()
 %%
-%% @doc 
+%% @doc
 %% Start the medici application, using a provided proplist as a set of
 %% additional options for the medici application.  WARNING: If you use
 %% start/1 the options you provide will become the new default startup
@@ -64,7 +64,7 @@ start(StartupOptions) when is_list(StartupOptions) ->
     CombinedOptions = StartupOptions ++ AppEnvOptions,
     %% Merge into a single set of options, favoring those passed in
     %% to start/1 over the app env.
-    MediciOptions = [{K, proplists:get_value(K, CombinedOptions)} || 
+    MediciOptions = [{K, proplists:get_value(K, CombinedOptions)} ||
         K <- proplists:get_keys(CombinedOptions)],
     application:load(medici),
     ok = application:set_env(medici, options, MediciOptions),
@@ -84,7 +84,7 @@ stop() ->
 
 put(Key, Value) ->
     gen_server:call(?CONTROLLER_NAME, {put, Key, Value}).
- 
+
 putcat(Key, Value) ->
     gen_server:call(?CONTROLLER_NAME, {putcat, Key, Value}).
 
@@ -190,7 +190,7 @@ searchout(Query) ->
 
 %% TODO: for completeness, set up two internal suites within this
 %% test suite, one for hash and another for table.  Test hash (assuming
-%% the server is already running), then test hash again by running the 
+%% the server is already running), then test hash again by running the
 %% server internal to medici, then test table the same way.  Need to
 %% review eunit docs to get this one right...
 
@@ -228,7 +228,7 @@ init_test() ->
 %%     ?MODULE:stop().
 
 medici_api_test_() ->
-    {setup, 
+    {setup,
      fun() -> ?MODULE:start() end,
      fun(_Cleanup) -> ?MODULE:stop() end,
      [?_test(put_get_unit()),
@@ -306,11 +306,11 @@ mget_unit() ->
     ok = ?MODULE:put(<<"mget2">>, <<"bob">>),
     ok = ?MODULE:put(<<"mget3">>, <<"carol">>),
     ok = ?MODULE:put(<<"mget4">>, <<"trent">>),
-    ?assert(?MODULE:mget([<<"mget1">>, <<"mget2">>, 
-			  <<"mget3">>, <<"mget4">>]) =:= 
-	    [{<<"mget1">>, <<"alice">>}, 
-	     {<<"mget2">>, <<"bob">>}, 
-	     {<<"mget3">>, <<"carol">>}, 
+    ?assert(?MODULE:mget([<<"mget1">>, <<"mget2">>,
+			  <<"mget3">>, <<"mget4">>]) =:=
+	    [{<<"mget1">>, <<"alice">>},
+	     {<<"mget2">>, <<"bob">>},
+	     {<<"mget3">>, <<"carol">>},
 	     {<<"mget4">>, <<"trent">>}]).
 
 vsiz_unit() ->

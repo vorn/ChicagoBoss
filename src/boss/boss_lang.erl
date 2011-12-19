@@ -28,13 +28,13 @@ update_po(App, Lang, all, []) ->
 %% @spec update_po( Lang::string(), Mode::atom(all|filled), Translation::TupleList([{"orig", "x"}, {"trans", "y"}]) ) -> ok | {error, Reason}
 update_po(App, Lang, Mode, Translations) ->
     LangFile = boss_files:lang_path(App, Lang),
-    {ok, IODevice} = file:open(LangFile, [write, append]),	
+    {ok, IODevice} = file:open(LangFile, [write, append]),
     lists:map(fun(Message) ->
                 Original = proplists:get_value("orig", Message),
                 Translation = proplists:get_value("trans", Message),
 				BlockIdentifier = proplists:get_value("identifier", Message),
                 case Translation of
-                    "" -> 
+                    "" ->
 						case Mode of
 							filled -> ok;
 							all -> lang_write_to_file(IODevice, Original, Translation, BlockIdentifier)
@@ -48,10 +48,10 @@ lang_write_to_file(IODevice, Original, Translation, BlockIdentifier) ->
 	OriginalEncoded = boss_lang:escape_quotes(Original),
 	TranslationEncoded = boss_lang:escape_quotes(Translation),
 	case BlockIdentifier of
-		undefined -> 
+		undefined ->
 			file:write(IODevice, io_lib:format("\nmsgid \"~ts\"\n",[OriginalEncoded])),
 			file:write(IODevice, io_lib:format("\msgstr \"~ts\"\n",[TranslationEncoded]));
-		Identifier -> 
+		Identifier ->
 			file:write(IODevice, io_lib:format("\n#. ~ts\n",[Identifier])),
 			file:write(IODevice, io_lib:format("msgid \"~s\"\n", [""])),
                         OriginalTokens = re:split(OriginalEncoded,"\r\n", [{return, list}]),
@@ -79,9 +79,9 @@ extract_strings(App) ->
 extract_strings(App, Lang) ->
     AllStrings = extract_strings(App),
     PoStrings = extract_po_strings(App, Lang) ++ extract_po_blocks(App, Lang, id),
-    UntranslatedStrings = lists:filter(fun(S) -> 
+    UntranslatedStrings = lists:filter(fun(S) ->
                 ToCheck = case S of
-                    [{identifier, _Identifier}, {string, String}] -> 
+                    [{identifier, _Identifier}, {string, String}] ->
                         binary_to_list(String);
                     _ -> S
                 end,
@@ -114,7 +114,7 @@ process_po_tokens([_|Rest], Acc) ->
 process_po_block_tokens([], _Mode, Acc) ->
     lists:reverse(Acc);
 process_po_block_tokens([{id, _MsgId}, {str, _MsgStr}|Rest], Mode, Acc) ->
-	process_po_block_tokens(Rest, Mode, Acc);	
+	process_po_block_tokens(Rest, Mode, Acc);
 process_po_block_tokens([{comment, MsgComment}, {id, MsgId}, {str, MsgStr}|Rest], Mode, Acc) ->
 	Id = case Mode of
 			 id -> MsgId;
@@ -130,7 +130,7 @@ extract_model_strings(App) ->
                 case lists:member({validation_tests, 1}, Exports) of
                     true ->
                         DummyRecord = boss_record_lib:dummy_record(Type),
-                        Messages = lists:map(fun({_TestFun, TestMsg}) -> TestMsg end, 
+                        Messages = lists:map(fun({_TestFun, TestMsg}) -> TestMsg end,
                             DummyRecord:validation_tests()),
                         Messages ++ Acc;
                     false ->
@@ -164,10 +164,10 @@ process_view_file(ViewFile) ->
 process_view_file_tokens([], Acc) ->
     Acc;
 process_view_file_tokens([{trans_keyword, _, _}, {string_literal, _, String}|Rest], Acc) ->
-    process_view_file_tokens(Rest, 
+    process_view_file_tokens(Rest,
         [unescape_string_literal(string:strip(String, both, $"))|Acc]);
 process_view_file_tokens([{'_', _}, {'(', _}, {string_literal, _, String}, {')', _}|Rest], Acc) ->
-    process_view_file_tokens(Rest, 
+    process_view_file_tokens(Rest,
         [unescape_string_literal(string:strip(String, both, $"))|Acc]);
 process_view_file_tokens([_|Rest], Acc) ->
     process_view_file_tokens(Rest, Acc).

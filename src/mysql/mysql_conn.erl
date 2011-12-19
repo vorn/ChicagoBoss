@@ -415,7 +415,7 @@ loop(State) ->
 %% GenSrvFrom is either a gen_server:call/3 From term(),
 %% or a pid if no gen_server was used to make the query
 send_reply(GenSrvFrom, Res) when is_pid(GenSrvFrom) ->
-    %% The query was not sent using gen_server mechanisms       
+    %% The query was not sent using gen_server mechanisms
     GenSrvFrom ! {fetch_result, self(), Res};
 send_reply(GenSrvFrom, Res) ->
     gen_server:reply(GenSrvFrom, Res).
@@ -455,7 +455,7 @@ do_queries(State, Queries) ->
 
 %% Execute a list of queries, returning the response for the last query.
 %% If a query returns an error before the last query is executed, the
-%% loop is aborted and the error is returned. 
+%% loop is aborted and the error is returned.
 do_queries(Sock, RecvPid, LogFun, Queries, Version) ->
     catch
 	lists:foldl(
@@ -468,7 +468,7 @@ do_queries(Sock, RecvPid, LogFun, Queries, Version) ->
 
 do_transaction(State, Fun) ->
     case do_query(State, <<"BEGIN">>) of
- 	{error, _} = Err ->	
+ 	{error, _} = Err ->
  	    {aborted, Err};
  	_ ->
 	    case catch Fun() of
@@ -539,7 +539,7 @@ make_statements_for_execute(Name, Params) ->
     ParamNums = lists:seq(1, NumParams),
 
     NameBin = atom_to_binary(Name),
-    
+
     ParamNames =
 	lists:foldl(
 	  fun(Num, Acc) ->
@@ -715,7 +715,7 @@ get_fields(LogFun, RecvPid, Res, ?MYSQL_4_0) ->
 			    Field,
 			    Length,
 			    %% TODO: Check on MySQL 4.0 if types are specified
-			    %%       using the same 4.1 formalism and could 
+			    %%       using the same 4.1 formalism and could
 			    %%       be expanded to atoms:
 			    Type},
 		    get_fields(LogFun, RecvPid, [This | Res], ?MYSQL_4_0)
@@ -746,7 +746,7 @@ get_fields(LogFun, RecvPid, Res, ?MYSQL_4_1) ->
 		     Length:32/little, Type:8/little,
 		     _Flags:16/little, _Decimals:8/little,
 		     _Rest7/binary>> = Rest6,
-		    
+
 		    This = {Table,
 			    Field,
 			    Length,
@@ -834,7 +834,7 @@ normalize_version([$4,$.,$1|_T], _LogFun) ->
     ?MYSQL_4_1;
 normalize_version([$5|_T], _LogFun) ->
     %% MySQL version 5.x protocol is compliant with MySQL 4.1.x:
-    ?MYSQL_4_1; 
+    ?MYSQL_4_1;
 normalize_version(_Other, LogFun) ->
     ?Log(LogFun, error, "MySQL version not supported: MySQL Erlang module "
 	 "might not work correctly."),
@@ -915,4 +915,4 @@ convert_type(Val, ColType, _Length) ->
 	_Other ->
 	    Val
     end.
-	    
+

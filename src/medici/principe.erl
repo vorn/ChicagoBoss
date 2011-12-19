@@ -16,11 +16,11 @@
 %%% @doc
 %%% A thin Erlang wrapper for the Tokyo Tyrant network database protocol.
 %%% Requires a Tyrant server that uses the 0.91 protocol version (Tyrant
-%%% servers of version 1.1.23 and beyond.)  
+%%% servers of version 1.1.23 and beyond.)
 %%%
 %%% Note: The Tyrant protocol is sensitive to endianness. Specifically, while
 %%% the server will take in data in network-order it will store it internally
-%%% in big or little endianness depending on the architecture that the Tyrant 
+%%% in big or little endianness depending on the architecture that the Tyrant
 %%% server is running on.  For many use-cases this is not a problem, but if you
 %%% plan on storing an int or float and then operating on it using the addint,
 %%% adddouble, or script extension functions which may just grab the internal
@@ -34,9 +34,9 @@
 %%%-------------------------------------------------------------------
 
 -module(principe).
--export([connect/0, 
-	 connect/1, 
-	 put/3, 
+-export([connect/0,
+	 connect/1,
+	 put/3,
 	 put/4,
 	 putkeep/3,
 	 putkeep/4,
@@ -46,24 +46,24 @@
 	 putshl/5,
 	 putnr/3,
 	 putnr/4,
-	 out/2, 
-	 get/2, 
-	 mget/2, 
-	 vsiz/2, 
-	 iterinit/1, 
-	 iternext/1, 
+	 out/2,
+	 get/2,
+	 mget/2,
+	 vsiz/2,
+	 iterinit/1,
+	 iternext/1,
 	 fwmkeys/3,
 	 addint/3,
-	 adddouble/3, 
+	 adddouble/3,
 	 adddouble/4,
 	 adddouble/5,
 	 sync/1,
 	 optimize/2,
-	 vanish/1, 
-	 rnum/1, 
-	 size/1, 
+	 vanish/1,
+	 rnum/1,
+	 size/1,
 	 stat/1,
-	 copy/2, 
+	 copy/2,
 	 restore/3,
 	 restore_with_check/3,
 	 setmst/3,
@@ -81,7 +81,7 @@
 
 %% @spec connect() -> {ok, port()} | error()
 %%
-%% @doc 
+%% @doc
 %% Establish a connection to the tyrant service.
 %% @end
 connect() ->
@@ -89,7 +89,7 @@ connect() ->
 
 %% @spec connect(ConnectProps::proplist()) -> {ok, port()} | error()
 %%
-%% @doc 
+%% @doc
 %% Establish a connection to the tyrant service using properties in the
 %% ConnectProps proplist to determine the hostname, port number and tcp
 %% socket options for the connection.  Any missing parameters are filled
@@ -106,8 +106,8 @@ connect(ConnectProps) ->
 	    gen_tcp:connect(Hostname, Port, Opts)
     end.
 
-%% @spec put(Socket::port(), 
-%%           Key::key(), 
+%% @spec put(Socket::port(),
+%%           Key::key(),
 %%           Value::value_or_num()) -> ok | error()
 %%
 %% @doc
@@ -118,11 +118,11 @@ put(Socket, Key, Value) when is_integer(Value), Value < 4294967296 ->
 put(Socket, Key, Value) when is_float(Value) ->
     put(Socket, Key, <<Value:64/float>>);
 put(Socket, Key, Value) ->
-    ?T2(?PUT),							     
+    ?T2(?PUT),
     ?R_SUCCESS.
 
-%% @spec put(Socket::port(), 
-%%           Key::key(), 
+%% @spec put(Socket::port(),
+%%           Key::key(),
 %%           Value::value_or_num(),
 %%           endian()) -> ok | error()
 %%
@@ -140,12 +140,12 @@ put(Socket, Key, Value, little) when is_float(Value) ->
 put(Socket, Key, Value, little) ->
     put(Socket, Key, Value).
 
-%% @spec putkeep(Socket::port(), 
-%%               Key::key(), 
+%% @spec putkeep(Socket::port(),
+%%               Key::key(),
 %%               Value::value_or_num()) -> ok | error()
 %%
-%% @doc 
-%% Call the Tyrant server to put a new key/value pair into the remote 
+%% @doc
+%% Call the Tyrant server to put a new key/value pair into the remote
 %% database.  Will return an error if there is already a value for the
 %% Key provided.
 %% @end
@@ -157,13 +157,13 @@ putkeep(Socket, Key, Value) ->
     ?T2(?PUTKEEP),
     ?R_SUCCESS.
 
-%% @spec putkeep(Socket::port(), 
-%%               Key::key(), 
+%% @spec putkeep(Socket::port(),
+%%               Key::key(),
 %%               Value::value_or_num()
 %%               endian()) -> ok | error()
 %%
-%% @doc 
-%% Call the Tyrant server to put a new key/value pair into the remote 
+%% @doc
+%% Call the Tyrant server to put a new key/value pair into the remote
 %% database.  Will return an error if there is already a value for the
 %% Key provided.  The fourth parameter determines endianness for encoding
 %% numbers on the remote database.
@@ -177,11 +177,11 @@ putkeep(Socket, Key, Value, little) when is_float(Value) ->
 putkeep(Socket, Key, Value, little) ->
     putkeep(Socket, Key, Value).
 
-%% @spec putcat(Socket::port(), 
-%%              Key::key(), 
+%% @spec putcat(Socket::port(),
+%%              Key::key(),
 %%              Value::value_or_num()) -> ok | error()
 %%
-%% @doc 
+%% @doc
 %% Concatenate a value to the end of the current value for a given key
 %% that is stored in the remote database.  If Key does not already
 %% exist in the database then this call will operate the same as put().
@@ -194,15 +194,15 @@ putcat(Socket, Key, Value) ->
     ?T2(?PUTCAT),
     ?R_SUCCESS.
 
-%% @spec putcat(Socket::port(), 
-%%              Key::key(), 
+%% @spec putcat(Socket::port(),
+%%              Key::key(),
 %%              Value::value_or_num(),
 %%              endian()) -> ok | error()
 %%
-%% @doc 
+%% @doc
 %% Concatenate a value to the end of the current value for a given key
 %% that is stored in the remote database.  If Key does not already
-%% exist in the database then this call will operate the same as put(). 
+%% exist in the database then this call will operate the same as put().
 %% The last parameter determines endian encoding on the remote database.
 %% @end
 putcat(Socket, Key, Value, big) ->
@@ -214,12 +214,12 @@ putcat(Socket, Key, Value, little) when is_float(Value) ->
 putcat(Socket, Key, Value, little) ->
     putcat(Socket, Key, Value).
 
-%% @spec putshl(Socket::port(), 
-%%              Key::key(), 
-%%              Value::value_or_num(), 
+%% @spec putshl(Socket::port(),
+%%              Key::key(),
+%%              Value::value_or_num(),
 %%              Width::integer()) -> ok | error()
 %%
-%% @doc 
+%% @doc
 %% Concatenate a value to a given key in the remote database and shift the
 %% resulting value to the left until it is Width bytes long.
 %% @end
@@ -228,19 +228,19 @@ putshl(Socket, Key, Value, Width) when is_integer(Value), Value < 4294967296 ->
 putshl(Socket, Key, Value, Width) when is_float(Value) ->
     putshl(Socket, Key, <<Value:64/float>>, Width);
 putshl(Socket, Key, Value, Width) when is_integer(Width) ->
-    gen_tcp:send(Socket, [<<?PUTSHL:16>>, 
-			  <<(iolist_size(Key)):32>>, 
-			  <<(iolist_size(Value)):32>>, 
+    gen_tcp:send(Socket, [<<?PUTSHL:16>>,
+			  <<(iolist_size(Key)):32>>,
+			  <<(iolist_size(Value)):32>>,
 			  <<Width:32>>, Key, Value]),
     ?R_SUCCESS.
 
-%% @spec putshl(Socket::port(), 
-%%              Key::key(), 
-%%              Value::value_or_num(), 
+%% @spec putshl(Socket::port(),
+%%              Key::key(),
+%%              Value::value_or_num(),
 %%              Width::integer(),
 %%              endian()) -> ok | error()
 %%
-%% @doc 
+%% @doc
 %% Concatenate a value to a given key in the remote database and shift the
 %% resulting value to the left until it is Width bytes long.  The last
 %% parameter determines byte-order encoding for the remote database.
@@ -254,11 +254,11 @@ putshl(Socket, Key, Value, Width, little) when is_float(Value) ->
 putshl(Socket, Key, Value, Width, little) ->
     putshl(Socket, Key, Value, Width).
 
-%% @spec putnr(Socket::port(), 
-%%             Key::key(), 
+%% @spec putnr(Socket::port(),
+%%             Key::key(),
 %%             Value::value_or_num()) -> ok
 %%
-%% @doc 
+%% @doc
 %% Put a key/value pair to the remote database and do not wait for a response.
 %% @end
 putnr(Socket, Key, Value) when is_integer(Value), Value < 4294967296 ->
@@ -269,12 +269,12 @@ putnr(Socket, Key, Value) ->
     ?T2(?PUTNR),
     ok.
 
-%% @spec putnr(Socket::port(), 
-%%             Key::key(), 
+%% @spec putnr(Socket::port(),
+%%             Key::key(),
 %%             Value::value_or_num(),
 %%             endian()) -> ok
 %%
-%% @doc 
+%% @doc
 %% Put a key/value pair to the remote database and do not wait for a response.
 %% The fourth parameter will decide how numbers are encoded for the remote
 %% database.
@@ -288,10 +288,10 @@ putnr(Socket, Key, Value, little) when is_float(Value) ->
 putnr(Socket, Key, Value, little) ->
     putnr(Socket, Key, Value).
 
-%% @spec out(Socket::port(), 
+%% @spec out(Socket::port(),
 %%           Key::key()) -> ok | error()
 %%
-%% @doc 
+%% @doc
 %% Remove a key from the remote database.  Will return an error if Key is
 %% not in the database.
 %% @end
@@ -299,7 +299,7 @@ out(Socket, Key) ->
     ?T1(?OUT),
     ?R_SUCCESS.
 
-%% @spec get(Socket::port(), 
+%% @spec get(Socket::port(),
 %%           Key::key()) -> binary() | error()
 %%
 %% @doc Get the value for a given key
@@ -312,8 +312,8 @@ get(Socket, Key) ->
 %%
 %% @doc Get the values for a list of keys
 mget(Socket, KeyList) when is_list(KeyList) ->
-    gen_tcp:send(Socket, [<<?MGET:16>>, 
-			  <<(length(KeyList)):32>>, 
+    gen_tcp:send(Socket, [<<?MGET:16>>,
+			  <<(length(KeyList)):32>>,
 			  [[<<(iolist_size(Key)):32>>, Key] || Key <- KeyList]
 			 ]),
     ?R_4TUPLE.
@@ -349,8 +349,8 @@ iternext(Socket) ->
 %%
 %% @doc Return a number of keys that match a given prefix.
 fwmkeys(Socket, Prefix, MaxKeys) when is_integer(MaxKeys) ->
-    gen_tcp:send(Socket, [<<?FWMKEYS:16>>, 
-			  <<(iolist_size(Prefix)):32>>, 
+    gen_tcp:send(Socket, [<<?FWMKEYS:16>>,
+			  <<(iolist_size(Prefix)):32>>,
 			  <<MaxKeys:32>>, Prefix]),
     ?R_2TUPLE.
 
@@ -371,9 +371,9 @@ addint(Socket, Key, Int) when is_integer(Int) ->
 adddouble(Socket, Key, Double) when is_float(Double) ->
     IntPart = trunc(Double),
     FracPart = trunc((Double - IntPart) * 1.0e12),
-    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>, 
+    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>,
 			  <<(iolist_size(Key)):32>>,
-			  <<IntPart:64>>, 
+			  <<IntPart:64>>,
 			  <<FracPart:64>>,
 			  Key]),
     ?R_SIZE64_SIZE64.
@@ -383,7 +383,7 @@ adddouble(Socket, Key, Double) when is_float(Double) ->
 %%                 Double::float() | IntPart::integer(),
 %%                 endian() | FracPart::integer()) -> {Integral::integer(), Fractional::integer()} | error()
 %%
-%% @doc 
+%% @doc
 %% Add a float to the existing value of a key, returns new value. The byte-order
 %% of the remote database is specified by the last parameter.
 %% @end
@@ -392,17 +392,17 @@ adddouble(Socket, Key, Double, big) ->
 adddouble(Socket, Key, Double, little) when is_float(Double) ->
     IntPart = trunc(Double),
     FracPart = trunc((Double - IntPart) * 1.0e12),
-    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>, 
+    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>,
 			  <<(iolist_size(Key)):32>>,
-			  <<IntPart:64/little>>, 
+			  <<IntPart:64/little>>,
 			  <<FracPart:64/little>>,
 			  Key]),
     ?R_SIZE64_SIZE64;
 %% Need to stuff this one in here because the arity is 4
 adddouble(Socket, Key, IntPart, FracPart) when is_integer(IntPart), is_integer(FracPart) ->
-    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>, 
+    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>,
 			  <<(iolist_size(Key)):32>>,
-			  <<IntPart:64>>, 
+			  <<IntPart:64>>,
 			  <<FracPart:64>>,
 			  Key]),
     ?R_SIZE64_SIZE64.
@@ -413,21 +413,21 @@ adddouble(Socket, Key, IntPart, FracPart) when is_integer(IntPart), is_integer(F
 %%                 Fractional::integer(),
 %%                 endian()) -> {Integral::integer(), Fractional::integer()} | error()
 %%
-%% @doc 
+%% @doc
 %% The raw adddouble function for those who need a bit more control on float adds
 %% The last parameter determines remote database byte-order.
 %% @end
 adddouble(Socket, Key, IntPart, FracPart, little) when is_integer(IntPart), is_integer(FracPart) ->
-    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>, 
-			  <<(iolist_size(Key)):32>>, 
-			  <<IntPart:64/little>>, 
+    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>,
+			  <<(iolist_size(Key)):32>>,
+			  <<IntPart:64/little>>,
 			  <<FracPart:64/little>>,
 			  Key]),
     ?R_SIZE64_SIZE64;
 adddouble(Socket, Key, IntPart, FracPart, big) when is_integer(IntPart), is_integer(FracPart) ->
-    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>, 
+    gen_tcp:send(Socket, [<<?ADDDOUBLE:16>>,
 			  <<(iolist_size(Key)):32>>,
-			  <<IntPart:64>>, 
+			  <<IntPart:64>>,
 			  <<FracPart:64>>,
 			  Key]),
     ?R_SIZE64_SIZE64.
@@ -492,7 +492,7 @@ stat_to_proplist([], Acc) ->
 stat_to_proplist([H1, H2 | T], Acc) ->
     stat_to_proplist(T, [{list_to_atom(H1), H2} | Acc]).
 
-%% @spec copy(Socket::port(), 
+%% @spec copy(Socket::port(),
 %%            iolist()) -> ok | error()
 %%
 %% @doc Make a copy of the database file of the remote database.
@@ -500,43 +500,43 @@ copy(Socket, Key) when is_binary(Key) ->
     ?T1(?COPY), % Using 'Key' so that the macro binds properly...
     ?R_SUCCESS.
 
-%% @spec restore(Socket::port(), 
-%%               PathName::iolist(), 
+%% @spec restore(Socket::port(),
+%%               PathName::iolist(),
 %%               TimeStamp::integer,
 %%               Options::) -> ok | error()
 %%
 %% @doc Restore the database to a particular point in time from the update log.
 restore(Socket, PathName, TimeStamp) ->
-    gen_tcp:send(Socket, [<<?RESTORE:16>>, 
+    gen_tcp:send(Socket, [<<?RESTORE:16>>,
 			  <<(iolist_size(PathName)):32>>,
 			  <<TimeStamp:64>>,
 			  <<0:32>>,
 			  PathName]),
     ?R_SUCCESS.
 
-%% @spec restore_with_check(Socket::port(), 
-%%                          PathName::iolist(), 
+%% @spec restore_with_check(Socket::port(),
+%%                          PathName::iolist(),
 %%                          TimeStamp::integer) -> ok | error()
 %%
 %% @doc Restore the database to a particular point in time from the update log and
 %%      perform a consistency check
 %% @end
 restore_with_check(Socket, PathName, TimeStamp) ->
-    gen_tcp:send(Socket, [<<?RESTORE:16>>, 
+    gen_tcp:send(Socket, [<<?RESTORE:16>>,
 			  <<(iolist_size(PathName)):32>>,
 			  <<TimeStamp:64>>,
 			  <<1:32>>,
 			  PathName]),
-    ?R_SUCCESS.    
+    ?R_SUCCESS.
 
-%% @spec setmst(Socket::port(), 
-%%              HostName::iolist(), 
+%% @spec setmst(Socket::port(),
+%%              HostName::iolist(),
 %%              Port::integer) -> ok | error()
 %%
 %% @doc Set the replication master of a remote database server.
 setmst(Socket, HostName, Port) when is_integer(Port) ->
-    gen_tcp:send(Socket, [<<?SETMST:16>>, 
-			  <<(iolist_size(HostName)):32>>, 
+    gen_tcp:send(Socket, [<<?SETMST:16>>,
+			  <<(iolist_size(HostName)):32>>,
 			  <<Port:32>>, HostName]),
     ?R_SUCCESS.
 
@@ -547,8 +547,8 @@ setmst(Socket, HostName, Port) when is_integer(Port) ->
 %% @doc Initiate master->slave replication to the server id provided starting at a
 %%      given timestamp.
 %% repl(Socket, TimeStamp, Sid) ->
-%%     gen_tcp:send(Socket, [<<?SETMST:16>>, 
-%% 			  <<TimeStamp:64>>, 
+%%     gen_tcp:send(Socket, [<<?SETMST:16>>,
+%% 			  <<TimeStamp:64>>,
 %% 			  <<Sid:32>>]),
 %%     ?R_SUCCESS.
 
@@ -569,17 +569,17 @@ setmst(Socket, HostName, Port) when is_integer(Port) ->
 %%    genuid -> generate unique ID number, returns integer
 %% @end
 misc(Socket, Func, Args) when length(Args) > 0 ->
-    gen_tcp:send(Socket, [<<?MISC:16>>, 
-			  <<(iolist_size(Func)):32>>, <<0:32>>, 
-			  <<(length(Args)):32>>, 
+    gen_tcp:send(Socket, [<<?MISC:16>>,
+			  <<(iolist_size(Func)):32>>, <<0:32>>,
+			  <<(length(Args)):32>>,
 			  Func,
 			  misc_arg_encode(big, Args)
 			 ]),
     ?R_2TUPLE;
 misc(Socket, Func, _Args) ->
-    gen_tcp:send(Socket, [<<?MISC:16>>, 
-			  <<(iolist_size(Func)):32>>, <<0:32>>, 
-			  <<0:32>>, 
+    gen_tcp:send(Socket, [<<?MISC:16>>,
+			  <<(iolist_size(Func)):32>>, <<0:32>>,
+			  <<0:32>>,
 			  Func]),
     ?R_2TUPLE.
 
@@ -604,9 +604,9 @@ misc(Socket, Func, _Args) ->
 misc(Socket, Func, Args, big) ->
     misc(Socket, Func, Args);
 misc(Socket, Func, Args, little) when length(Args) > 0 ->
-    gen_tcp:send(Socket, [<<?MISC:16>>, 
-			  <<(iolist_size(Func)):32>>, <<0:32>>, 
-			  <<(length(Args)):32>>, 
+    gen_tcp:send(Socket, [<<?MISC:16>>,
+			  <<(iolist_size(Func)):32>>, <<0:32>>,
+			  <<(length(Args)):32>>,
 			  Func,
 			  misc_arg_encode(little, Args)
 			 ]),
@@ -621,17 +621,17 @@ misc(Socket, Func, Args, _Endian) ->
 %%
 %% @doc Tyrant misc() call that does not write to the update logs
 misc_no_update(Socket, Func, Args) when length(Args) > 0 ->
-    gen_tcp:send(Socket, [<<?MISC:16>>, 
-			  <<(iolist_size(Func)):32>>, <<1:32>>, 
+    gen_tcp:send(Socket, [<<?MISC:16>>,
+			  <<(iolist_size(Func)):32>>, <<1:32>>,
 			  <<(length(Args)):32>>,
 			  Func,
 			  misc_arg_encode(big, Args)
 			 ]),
     ?R_2TUPLE;
 misc_no_update(Socket, Func, _Args) ->
-    gen_tcp:send(Socket, [<<?MISC:16>>, 
-			  <<(iolist_size(Func)):32>>, <<1:32>>, 
-			  <<0:32>>, 
+    gen_tcp:send(Socket, [<<?MISC:16>>,
+			  <<(iolist_size(Func)):32>>, <<1:32>>,
+			  <<0:32>>,
 			  Func]),
     ?R_2TUPLE.
 
@@ -645,8 +645,8 @@ misc_no_update(Socket, Func, _Args) ->
 misc_no_update(Socket, Func, Args, big) ->
     misc_no_update(Socket, Func, Args);
 misc_no_update(Socket, Func, Args, little) when length(Args) > 0 ->
-    gen_tcp:send(Socket, [<<?MISC:16>>, 
-			  <<(iolist_size(Func)):32>>, <<1:32>>, 
+    gen_tcp:send(Socket, [<<?MISC:16>>,
+			  <<(iolist_size(Func)):32>>, <<1:32>>,
 			  <<(length(Args)):32>>,
 			  Func,
 			  misc_arg_encode(little, Args)
@@ -682,8 +682,8 @@ misc_arg_encode(Endian, [Arg | Tail], ArgList) ->
 %% @doc Call a function defined by the Tyrant script language extensions.
 ext(Socket, Func, Opts, Key, Value) ->
     %% TODO: Opts needs to be parsed.  Probably as a proplist [record_lock, global_lock, neither...]
-    gen_tcp:send(Socket, [<<?EXT:16>>, <<(iolist_size(Func)):32>>, <<Opts:32>>, 
-			  <<(iolist_size(Key)):32>>, <<(iolist_size(Value)):32>>, 
+    gen_tcp:send(Socket, [<<?EXT:16>>, <<(iolist_size(Func)):32>>, <<Opts:32>>,
+			  <<(iolist_size(Key)):32>>, <<(iolist_size(Value)):32>>,
 			  Func, Key, Value]),
     ?R_SIZE_DATA.
 
@@ -714,18 +714,18 @@ tyrant_response(ResponseHandler) ->
 	    {error, no_such_record};
         {tcp, _, <<ErrorCode:8, _Rest/binary>>} when ErrorCode =/= 0 ->
 	    {error, ErrorCode};
-        {tcp_closed, _} -> 
+        {tcp_closed, _} ->
 	    {error, conn_closed};
-        {tcp_error, _, _} -> 
+        {tcp_error, _, _} ->
 	    {error, conn_error};
-        Data -> 
+        Data ->
 	    ResponseHandler(Data)
-    after ?TIMEOUT -> 
+    after ?TIMEOUT ->
 	    {error, timeout}
     end.
 
 %% receive 8-bit success flag
-recv_success({tcp, _, <<0:8>>}) -> 
+recv_success({tcp, _, <<0:8>>}) ->
     ok;
 
 %% TODO: find out why principe_table:search enters this clause
@@ -734,30 +734,30 @@ recv_success({tcp, _, <<0:8>>}) ->
 %% spotted -- try yanking this and checking again...}
 recv_success({tcp, _, _})->
    ok.
- 
+
 %% receive 8-bit success flag + 32-bit int (endianness determined by remote database)
 recv_size({tcp, _, <<0:8, ValSize:32>>}) ->
     ValSize;
 recv_size({tcp, _, <<0:8, SmallBin/binary>>}) ->
     {ValSize, _Rest} = recv_until(SmallBin, 4),
     ValSize.
- 
+
 %% receive 8-bit success flag + 64-bit int
-recv_size64({tcp, _, <<0:8, ValSize:64>>}) -> 
+recv_size64({tcp, _, <<0:8, ValSize:64>>}) ->
     ValSize;
 recv_size64({tcp, _, <<0:8, SmallBin/binary>>}) ->
     {ValSize, _Rest} = recv_until(SmallBin, 8),
     ValSize.
- 
+
 %% receive 8-bit success flag + 64-bit int + 64-bit int
-recv_size64_size64({tcp, _, <<0:8, V1:64, V2:64>>}) -> 
+recv_size64_size64({tcp, _, <<0:8, V1:64, V2:64>>}) ->
     {V1, V2};
 recv_size64_size64({tcp, _, <<0:8, SmallBin/binary>>}) ->
     %% Did not get a full chunk of data, so get more.
     {V1, V2Bin} = recv_until(SmallBin, 8),
     {V2, _Rest} = recv_until(V2Bin, 8),
     {V1, V2}.
- 
+
 %% receive 8-bit success flag + length1 + data1
 recv_size_data({tcp, _, <<0:8, Size:32, Data/binary>>}) when byte_size(Data) >= Size ->
     <<Value:Size/binary, _Rest/binary>> = Data,
@@ -779,7 +779,7 @@ recv_count_4tuple({tcp, _, <<0:8, Cnt:32, Rest/binary>>}) ->
     {KeyVals, _} = lists:foldl(
 		     %% This fold should grab/process one value per iteration.
 		     fun(_IterCount, {Vals, <<KeySize:32, ValSize:32, Bin/binary>>}) ->
-			     %% We have at least the key and value sizes, so make recv_until's 
+			     %% We have at least the key and value sizes, so make recv_until's
 			     %% job easier and just ask it to split/pull the data elements.
 			     {Key, ValBin} = recv_until(Bin, KeySize),
 			     {Value, RestBin} = recv_until(ValBin, ValSize),
@@ -790,7 +790,7 @@ recv_count_4tuple({tcp, _, <<0:8, Cnt:32, Rest/binary>>}) ->
 			     {<<KeySize:32>>, ValSizeAndDataBin} = recv_until(SmallBin, 4),
 			     {<<ValSize:32>>, DataBin} = recv_until(ValSizeAndDataBin, 4),
 			     {Key, ValBin} = recv_until(DataBin, KeySize),
-			     {Value, RestBin} = recv_until(ValBin, ValSize),			     
+			     {Value, RestBin} = recv_until(ValBin, ValSize),
 			     {[{Key, Value}] ++ Vals, RestBin}
 		     end,
 		     {[], Rest}, lists:seq(1, Cnt)
@@ -825,11 +825,11 @@ recv_until(Bin, ReqLength) when byte_size(Bin) < ReqLength ->
         {tcp, _, Data} ->
             Combined = <<Bin/binary, Data/binary>>,
             recv_until(Combined, ReqLength);
-        {tcp_closed, _} -> 
+        {tcp_closed, _} ->
 	    {error, conn_closed};
 	{error, closed} ->
 	    {error, conn_closed}
-    after ?TIMEOUT -> 
+    after ?TIMEOUT ->
 	    {error, timeout}
     end;
 recv_until(Bin, ReqLength) ->
@@ -939,11 +939,11 @@ mget_test() ->
     ok = ?MODULE:put(Socket, <<"mget2">>, <<"bob">>),
     ok = ?MODULE:put(Socket, <<"mget3">>, <<"carol">>),
     ok = ?MODULE:put(Socket, <<"mget4">>, <<"trent">>),
-    ?assert(?MODULE:mget(Socket, [<<"mget1">>, <<"mget2">>, 
-				   <<"mget3">>, <<"mget4">>]) =:= 
-	    [{<<"mget1">>, <<"alice">>}, 
-	     {<<"mget2">>, <<"bob">>}, 
-	     {<<"mget3">>, <<"carol">>}, 
+    ?assert(?MODULE:mget(Socket, [<<"mget1">>, <<"mget2">>,
+				   <<"mget3">>, <<"mget4">>]) =:=
+	    [{<<"mget1">>, <<"alice">>},
+	     {<<"mget2">>, <<"bob">>},
+	     {<<"mget3">>, <<"carol">>},
 	     {<<"mget4">>, <<"trent">>}]),
     ok.
 
@@ -1047,8 +1047,8 @@ misc_test() ->
     ?assert(?MODULE:rnum(Socket) =:= 1),
     ?MODULE:put(Socket, "key5", "value5"),
     GetlistOut = ?MODULE:misc(Socket, "getlist", ["key4", "key5"]),
-    ?assert(lists:all(fun (K) -> lists:member(K, GetlistOut) end, 
-		      [<<"key4">>, <<"value4">>, 
+    ?assert(lists:all(fun (K) -> lists:member(K, GetlistOut) end,
+		      [<<"key4">>, <<"value4">>,
 		       <<"key5">>, <<"value5">>])),
     ok.
 -endif.

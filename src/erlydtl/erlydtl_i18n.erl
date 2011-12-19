@@ -1,6 +1,6 @@
 %% Author: dave
 %% Created: Feb 25, 2010
-%% Description: Bridge between erlydtl compiler and gettext server 
+%% Description: Bridge between erlydtl compiler and gettext server
 -module(erlydtl_i18n).
 
 %%

@@ -69,7 +69,7 @@ Upgrade: From 0.3 to 0.4
 ------------------------
 
 The directory structure has changed somewhat. The MVC files have moved around, and
-files for the /admin interface are in a separate directory (ADMIN). 
+files for the /admin interface are in a separate directory (ADMIN).
 
 The following steps should get you most of the way to an upgrade:
 

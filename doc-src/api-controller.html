@@ -1,14 +1,14 @@
 {% extends "api.html" %}
 {% block api_content %}
-<p style="font-size: 14px;"><em>Jump to:</em> 
-&nbsp; <a href="#routes">Routes</a> 
-&nbsp; <a href="#auth">Authorization</a> 
-&nbsp; <a href="#return_values">Return values</a> 
-&nbsp; <a href="#filter">Post-processing</a> 
+<p style="font-size: 14px;"><em>Jump to:</em>
+&nbsp; <a href="#routes">Routes</a>
+&nbsp; <a href="#auth">Authorization</a>
+&nbsp; <a href="#return_values">Return values</a>
+&nbsp; <a href="#filter">Post-processing</a>
 &nbsp; <a href="#simplebridge">SimpleBridge request object</a></p>
-<p>Chicago Boss associates each URL with a function of a controller. 
-The URL <nobr>/foo/bar</nobr> will call the function <code>foo_controller:bar</code>. 
-Each controller module should go into your project's src/controller/ directory and the file name should end with "_controller.erl". 
+<p>Chicago Boss associates each URL with a function of a controller.
+The URL <nobr>/foo/bar</nobr> will call the function <code>foo_controller:bar</code>.
+Each controller module should go into your project's src/controller/ directory and the file name should end with "_controller.erl".
 Helper functions should go into your project's src/lib/ directory.
 Controllers can take one parameter or two parameters: the <a href="#simplebridge">SimpleBridge request object</a>, and an optional session ID (if <a href="api-session.html">sessions</a> are enabled). Declare it like:</p>
 <div class="code">
@@ -120,7 +120,7 @@ before_(_) -&gt;<br />
 <div class="code">
     {ok, Variables<span class="typevar">::proplist()</span>, Headers<span class="typevar">::proplist()</span>}
 </div>
-    
+
 <p><code>Variables</code> will be passed into the associated Django template, and <code>Headers</code> are HTTP headers you want to set (e.g., <code>Content-Type</code>).</p>
 
 <div class="code">
@@ -232,7 +232,7 @@ before_(_) -&gt;<br />
     deep_param( [ Path<span class="typevar">::string()</span> ] ) -&gt; DeepParam | undefined
 </div>
 
-<p>Get the value of a given "deep" POST parameter. 
+<p>Get the value of a given "deep" POST parameter.
 This function parses parameters that have numerical or labeled indices, such as "widget[4][name]", and returns either a value or a set of nested lists (for numerical indices) and proplists (for string indices).</p>
 
 <div class="code">

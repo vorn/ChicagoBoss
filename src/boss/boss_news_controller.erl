@@ -10,7 +10,7 @@
         watch_dict = dict:new(),
         ttl_tree = gb_trees:empty(),
 
-        set_watchers = dict:new(), 
+        set_watchers = dict:new(),
         id_watchers = dict:new(),
 
         set_attr_watchers = dict:new(),
@@ -74,7 +74,7 @@ handle_call({set_watch, WatchId, TopicString, CallBack, UserInfo, TTL}, From, St
                                     }, {id_attr, Id, Attr}}
                         end,
                         {ok, NewState1, [WatchInfo|WatchListAcc]};
-                    _ -> 
+                    _ ->
                         case re:split(SingleTopic, "-", [{return, list}]) of
                             [_Module, _IdNum] ->
                                 IdWatchers = case dict:find(SingleTopic, State#state.id_watchers) of
@@ -98,13 +98,13 @@ handle_call({set_watch, WatchId, TopicString, CallBack, UserInfo, TTL}, From, St
                 Error
         end, {ok, State, []}, re:split(TopicString, ", +", [{return, list}])),
     case RetVal of
-        ok -> {reply, RetVal, NewState#state{ 
-                    watch_dict = dict:store(WatchId, 
-                        #watch{ 
-                            watch_list = WatchList, 
-                            callback = CallBack, 
-                            user_info = UserInfo, 
-                            exp_time = ExpTime, 
+        ok -> {reply, RetVal, NewState#state{
+                    watch_dict = dict:store(WatchId,
+                        #watch{
+                            watch_list = WatchList,
+                            callback = CallBack,
+                            user_info = UserInfo,
+                            exp_time = ExpTime,
                             ttl = TTL}, NewState#state.watch_dict),
                     ttl_tree = boss_pq:insert_value(ExpTime, WatchId, NewState#state.ttl_tree)
                 }};
@@ -125,7 +125,7 @@ handle_call({extend_watch, WatchId}, _From, State0) ->
         {ok, #watch{ exp_time = ExpTime, ttl = TTL } = Watch} ->
             NewExpTime = future_time(TTL),
             NewTree = boss_pq:move_value(ExpTime, NewExpTime, WatchId, State#state.ttl_tree),
-            {ok, State#state{ ttl_tree = NewTree, 
+            {ok, State#state{ ttl_tree = NewTree,
                     watch_dict = dict:store(WatchId, Watch#watch{ exp_time = NewExpTime }, State#state.watch_dict) }};
         _ ->
             {{error, not_found}, State}
@@ -136,11 +136,11 @@ handle_call({created, Id, Attrs}, _From, State0) ->
     [Module | _IdNum] = re:split(Id, "-", [{return, list}]),
     PluralModel = inflector:pluralize(Module),
     {RetVal, State1} = case dict:find(PluralModel, State#state.set_watchers) of
-        {ok, SetWatchers} -> 
+        {ok, SetWatchers} ->
             Record = activate_record(Id, Attrs),
             NewState = lists:foldr(fun(WatchId, Acc0) ->
-                        #watch{ watch_list = WatchList, 
-                            callback = CallBack, 
+                        #watch{ watch_list = WatchList,
+                            callback = CallBack,
                             user_info = UserInfo } = dict:fetch(WatchId, State#state.watch_dict),
                         lists:foldr(fun
                                 ({set, TopicString}, Acc1) when TopicString =:= PluralModel ->
@@ -158,11 +158,11 @@ handle_call({deleted, Id, OldAttrs}, _From, State0) ->
     [Module | _IdNum] = re:split(Id, "-", [{return, list}]),
     PluralModel = inflector:pluralize(Module),
     {RetVal, State1} = case dict:find(PluralModel, State#state.set_watchers) of
-        {ok, SetWatchers} -> 
+        {ok, SetWatchers} ->
             Record = activate_record(Id, OldAttrs),
             NewState = lists:foldr(fun(WatchId, Acc0) ->
-                        #watch{ watch_list = WatchList, 
-                            callback = CallBack, 
+                        #watch{ watch_list = WatchList,
+                            callback = CallBack,
                             user_info = UserInfo } = dict:fetch(WatchId, State#state.watch_dict),
                         lists:foldr(fun
                                 ({set, TopicString}, Acc1) when TopicString =:= PluralModel ->
@@ -196,10 +196,10 @@ handle_call({updated, Id, OldAttrs, NewAttrs}, _From, State0) ->
                 KeyString = atom_to_list(Key),
                 case NewRecord:Key() of
                     OldVal -> Acc0;
-                    NewVal -> 
+                    NewVal ->
                         lists:foldr(fun(WatchId, Acc1) ->
-                                    #watch{ watch_list = WatchList, 
-                                        callback = CallBack, 
+                                    #watch{ watch_list = WatchList,
+                                        callback = CallBack,
                                         user_info = UserInfo } = dict:fetch(WatchId, State#state.watch_dict),
                                     lists:foldr(fun
                                             ({id_attr, ThisId, Attr}, Acc2) when ThisId =:= Id, Attr =:= KeyString ->
@@ -289,10 +289,10 @@ prune_expired_entries(#state{ ttl_tree = Tree } = State) ->
 
 execute_callback(Fun, Event, EventInfo, UserInfo, WatchId, State) when is_function(Fun) ->
     case Fun(Event, EventInfo, UserInfo) of
-        {ok, cancel_watch} -> 
+        {ok, cancel_watch} ->
             {reply, _, NewState} = handle_call({cancel_watch, WatchId}, undefined, State),
             NewState;
-        {ok, extend_watch} -> 
+        {ok, extend_watch} ->
             {reply, _, NewState} = handle_call({extend_watch, WatchId}, undefined, State),
             NewState;
         _ ->
