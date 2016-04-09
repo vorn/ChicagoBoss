@@ -828,7 +828,7 @@ parse_with_comments_test_() ->
 			end
 		}
 	].
-	
+
 parse_content_type_test_() ->
 	[
 		{"parsing content types",
@@ -1050,12 +1050,12 @@ parse_example_mails_test_() ->
 				?assertMatch({<<"message">>, <<"rfc822">>, _, _, _}, Message),
 				Submessage = element(5, Message),
 				?assertMatch({<<"text">>, <<"plain">>, _, _, <<"This message contains only plain text.\r\n">>}, Submessage),
-				
+
 				?assertMatch({<<"text">>, <<"rtf">>, _, _, _}, Rtf),
 				?assertEqual(<<"{\\rtf1\\ansi\\ansicpg1252\\cocoartf949\\cocoasubrtf460\r\n{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}\r\n{\\colortbl;\\red255\\green255\\blue255;}\r\n\\margl1440\\margr1440\\vieww9000\\viewh8400\\viewkind0\r\n\\pard\\tx720\\tx1440\\tx2160\\tx2880\\tx3600\\tx4320\\tx5040\\tx5760\\tx6480\\tx7200\\tx7920\\tx8640\\ql\\qnatural\\pardirnatural\r\n\r\n\\f0\\fs24 \\cf0 This is a basic rtf file.}">>, element(5, Rtf)),
-				
+
 				?assertMatch({<<"image">>, <<"jpeg">>, _, _, _}, Image),
-				?assertEqual(?IMAGE_MD5, erlang:md5(element(5, Image)))				
+				?assertEqual(?IMAGE_MD5, erlang:md5(element(5, Image)))
 			end
 		},
 		{"Outlook 2007 with leading tabs in quoted-printable.",
@@ -1092,17 +1092,17 @@ parse_example_mails_test_() ->
 				[Html, Messagewithin, _Brhtml, _Message, _Brhtml, Image, _Brhtml, Rtf, _Brhtml] = element(5, Topmultipart),
 				?assertMatch({<<"text">>, <<"html">>, _, _, _}, Html),
 				?assertEqual(<<"<html><body style=\"word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: after-white-space; \"><b>This</b> is <i>rich</i> text.<div><br></div><div>The list is html.</div><div><br></div><div>Attchments:</div><div><ul class=\"MailOutline\"><li>an email containing an attachment of an email.</li><li>an email of only plain text.</li><li>an image</li><li>an rtf file.</li></ul></div><div></div></body></html>">>, element(5, Html)),
-				
+
 				?assertMatch({<<"message">>, <<"rfc822">>, _, _, _}, Messagewithin),
 				%?assertEqual(1, length(element(5, Messagewithin))),
 				?assertMatch({<<"multipart">>, <<"mixed">>, _, _, [{<<"message">>, <<"rfc822">>, _, _, {<<"text">>, <<"plain">>, _, _, <<"This message contains only plain text.\r\n">>}}]}, element(5, Messagewithin)),
-				
+
 				?assertMatch({<<"image">>, <<"jpeg">>, _, _, _}, Image),
 				?assertEqual(?IMAGE_MD5, erlang:md5(element(5, Image))),
-				
+
 				?assertMatch({<<"text">>, <<"rtf">>, _, _, _}, Rtf),
 				?assertEqual(<<"{\\rtf1\\ansi\\ansicpg1252\\cocoartf949\\cocoasubrtf460\r\n{\\fonttbl\\f0\\fswiss\\fcharset0 Helvetica;}\r\n{\\colortbl;\\red255\\green255\\blue255;}\r\n\\margl1440\\margr1440\\vieww9000\\viewh8400\\viewkind0\r\n\\pard\\tx720\\tx1440\\tx2160\\tx2880\\tx3600\\tx4320\\tx5040\\tx5760\\tx6480\\tx7200\\tx7920\\tx8640\\ql\\qnatural\\pardirnatural\r\n\r\n\\f0\\fs24 \\cf0 This is a basic rtf file.}">>, element(5, Rtf))
-				
+
 			end
 		},
 		{"Plain text and 2 identical attachments",

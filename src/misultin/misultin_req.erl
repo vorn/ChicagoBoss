@@ -2,7 +2,7 @@
 % MISULTIN - Request
 %
 % >-|-|-(°>
-% 
+%
 % Copyright (C) 2010, Roberto Ostinelli <roberto@ostinelli.net>,
 %					  Bob Ippolito <bob@mochimedia.com> for Mochi Media, Inc.
 % All rights reserved.
@@ -11,7 +11,7 @@
 % <http://code.google.com/p/mochiweb/>
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -101,7 +101,7 @@ respond(HttpCode, Headers, Template) ->
 	{HttpCode, Headers, Template}.
 respond(HttpCode, Headers, Template, Vars) when is_list(Template) =:= true ->
 	{HttpCode, Headers, io_lib:format(Template, Vars)}.
-	
+
 % Description: Start stream.
 stream(close) ->
 	catch SocketPid ! stream_close;
@@ -115,11 +115,11 @@ stream(Template, Vars) when is_list(Template) =:= true ->
 	catch SocketPid ! {stream_data, io_lib:format(Template, Vars)}.
 stream(head, HttpCode, Headers) ->
 	catch SocketPid ! {stream_head, HttpCode, Headers}.
-	
+
 % Description: Sends a file to the browser.
 file(FilePath) ->
 	file_send(FilePath, []).
-% Description: Sends a file for download.	
+% Description: Sends a file for download.
 file(attachment, FilePath) ->
 	% get filename
 	FileName = filename:basename(FilePath),
@@ -220,7 +220,7 @@ unquote(String) ->
 clean_uri(lowercase, Uri) ->
 	string:to_lower(Uri);
 clean_uri(urldecode, Uri) ->
-	unquote(Uri);	
+	unquote(Uri);
 % ignore unexisting option
 clean_uri(_Unavailable, Uri) ->
 	Uri.
@@ -252,7 +252,7 @@ file_open_and_send(FilePath) ->
 			{error, Reason};
 		{ok, IoDevice} ->
 			% read portions
-			case file_read_and_send(IoDevice, 0) of 
+			case file_read_and_send(IoDevice, 0) of
 				{error, Reason} ->
 					file:close(IoDevice),
 					{error, Reason};

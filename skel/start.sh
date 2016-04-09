@@ -9,4 +9,4 @@ cd `dirname $0`
 # change the cookie too. (All nodes in a cluster must have the same cookie.)
 exec erl -pa $PWD/ebin -pa {{src}}/ebin -pa {{src}}/deps/*/ebin \
     -boot start_sasl -config boss -s boss -setcookie abc123 -detached \
-    -sname john 
+    -sname john

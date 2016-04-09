@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% File    : principe.hrl
 %%% Author  : Jim McCoy <>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created :  6 Sept 2009 by Jim McCoy <>
 %%%-------------------------------------------------------------------
@@ -82,9 +82,9 @@
 -define(T1(Code), gen_tcp:send(Socket, [<<Code:16>>, <<(iolist_size(Key)):32>>, Key])).
 -define(T2(Code), gen_tcp:send(Socket, [<<Code:16>>, <<(iolist_size(Key)):32>>, <<(iolist_size(Value)):32>>, Key, Value])).
 
--define(TSimple(Func, Args), case principe:misc(Socket, Func, Args) of 
-				 [] -> ok; 
-				 Error -> Error 
+-define(TSimple(Func, Args), case principe:misc(Socket, Func, Args) of
+				 [] -> ok;
+				 Error -> Error
 			     end).
 -define(TRaw(Func, Args), principe:misc(Socket, Func, Args)).
 

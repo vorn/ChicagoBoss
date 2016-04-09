@@ -5,7 +5,7 @@
 -module (simple_bridge_request).
 -include_lib ("simple_bridge.hrl").
 -export ([
-    make/2, 
+    make/2,
     behaviour_info/1
 ]).
 
@@ -17,17 +17,17 @@ make(Module, RequestData) ->
         erlang:Type(Error)
     end.
 
-make_nocatch(Module, RequestData) -> 
+make_nocatch(Module, RequestData) ->
     RequestData1 = Module:init(RequestData),
     RequestBridge = simple_bridge_request_wrapper:new(Module, RequestData1, false, [], [], none),
     case simple_bridge_multipart:parse(RequestBridge) of
-        {ok, Params, Files} -> 
+        {ok, Params, Files} ->
             RequestBridge:set_multipart(Params, Files);
-        {ok, not_multipart} -> 
+        {ok, not_multipart} ->
             RequestBridge;
-        {error, Error} -> 
+        {error, Error} ->
             RequestBridge:set_error(Error);
-        Other -> 
+        Other ->
             throw({unexpected, Other})
     end.
 

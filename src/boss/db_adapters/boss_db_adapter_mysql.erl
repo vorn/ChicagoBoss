@@ -37,8 +37,8 @@ find(Pid, Id) when is_list(Id) ->
             {error, mysql:get_result_reason(MysqlRes)}
     end.
 
-find(Pid, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_list(Conditions), 
-                                                              is_integer(Max), is_integer(Skip), 
+find(Pid, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_list(Conditions),
+                                                              is_integer(Max), is_integer(Skip),
                                                               is_atom(Sort), is_atom(SortOrder) ->
     case model_is_loaded(Type) of
         true ->
@@ -59,7 +59,7 @@ find(Pid, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_l
 count(Pid, Type, Conditions) ->
     ConditionClause = build_conditions(Conditions),
     TableName = type_to_table_name(Type),
-    Res = mysql:fetch(Pid, ["SELECT COUNT(*) AS count FROM ", TableName, 
+    Res = mysql:fetch(Pid, ["SELECT COUNT(*) AS count FROM ", TableName,
             " WHERE ", ConditionClause]),
     case Res of
         {data, MysqlRes} ->
@@ -79,12 +79,12 @@ counter(Pid, Id) when is_list(Id) ->
     end.
 
 incr(Pid, Id, Count) ->
-    Res = mysql:fetch(Pid, ["UPDATE counters SET value = value + ", pack_value(Count), 
+    Res = mysql:fetch(Pid, ["UPDATE counters SET value = value + ", pack_value(Count),
             " WHERE name = ", pack_value(Id)]),
     case Res of
         {updated, _} ->
             counter(Pid, Id); % race condition
-        {error, _Reason} -> 
+        {error, _Reason} ->
             Res1 = mysql:fetch(Pid, ["INSERT INTO counters (name, value) VALUES (",
                     pack_value(Id), ", ", pack_value(Count), ")"]),
             case Res1 of
@@ -95,11 +95,11 @@ incr(Pid, Id, Count) ->
 
 delete(Pid, Id) when is_list(Id) ->
     {_, TableName, TableId} = infer_type_from_id(Id),
-    Res = mysql:fetch(Pid, ["DELETE FROM ", TableName, " WHERE id = ", 
+    Res = mysql:fetch(Pid, ["DELETE FROM ", TableName, " WHERE id = ",
             pack_value(TableId)]),
     case Res of
         {updated, _} ->
-            mysql:fetch(Pid, ["DELETE FROM counters WHERE name = ", 
+            mysql:fetch(Pid, ["DELETE FROM counters WHERE name = ",
                     pack_value(Id)]),
             ok;
         {error, MysqlRes} -> {error, mysql:get_result_reason(MysqlRes)}
@@ -131,7 +131,7 @@ save_record(Pid, Record) when is_tuple(Record) ->
                 {updated, _} ->
                     {ok, Record:id(lists:concat([Type, "-", integer_to_list(Identifier)]))};
                 {error, MysqlRes} -> {error, mysql:get_result_reason(MysqlRes)}
-            end;			
+            end;
         Defined when is_list(Defined) ->
             Query = build_update_query(Record),
             Res = mysql:fetch(Pid, Query),
@@ -183,7 +183,7 @@ activate_record(Record, Metadata, Type) ->
                     case lists:nth(Index, Record) of
                         {datetime, DateTime} -> DateTime;
                         undefined -> undefined;
-                        Val -> 
+                        Val ->
                             case lists:suffix("_id", KeyString) of
                                 true -> integer_to_id(Val, KeyString);
                                 false -> Val
@@ -240,7 +240,7 @@ build_insert_query(Record) ->
                 end,
                 {[AString|Attrs], [pack_value(Value)|Vals]}
         end, {[], []}, Record:attributes()),
-    ["INSERT INTO ", TableName, " (", 
+    ["INSERT INTO ", TableName, " (",
         string:join(Attributes, ", "),
         ") values (",
         string:join(Values, ", "),
@@ -251,7 +251,7 @@ build_update_query(Record) ->
     {_, TableName, Id} = infer_type_from_id(Record:id()),
     Updates = lists:foldl(fun
             ({id, _}, Acc) -> Acc;
-            ({A, V}, Acc) -> 
+            ({A, V}, Acc) ->
                 AString = atom_to_list(A),
                 Value = case lists:suffix("_id", AString) of
                     true ->
@@ -265,12 +265,12 @@ build_update_query(Record) ->
     ["UPDATE ", TableName, " SET ", string:join(Updates, ", "),
         " WHERE id = ", pack_value(Id)].
 
-build_select_query(Type, Conditions, Max, Skip, Sort, SortOrder) ->	
+build_select_query(Type, Conditions, Max, Skip, Sort, SortOrder) ->
     TableName = type_to_table_name(Type),
-    ["SELECT * FROM ", TableName, 
+    ["SELECT * FROM ", TableName,
         " WHERE ", build_conditions(Conditions),
         " ORDER BY ", atom_to_list(Sort), " ", sort_order_sql(SortOrder),
-        " LIMIT ", integer_to_list(Max), 
+        " LIMIT ", integer_to_list(Max),
         " OFFSET ", integer_to_list(Skip)
     ].
 
@@ -282,7 +282,7 @@ is_foreign_key(Key) when is_atom(Key) ->
 	KeyTokens = string:tokens(atom_to_list(Key), "_"),
 	LastToken = hd(lists:reverse(KeyTokens)),
 	case (length(KeyTokens) > 1 andalso LastToken == "id") of
-		true -> 
+		true ->
 			Module = join(lists:reverse(tl(lists:reverse(KeyTokens))), "_"),
     		case code:is_loaded(list_to_atom(Module)) of
         		{file, _Loaded} -> true;
@@ -301,7 +301,7 @@ build_conditions1([{Key, 'equals', Value}|Rest], Acc) when Value == undefined ->
     build_conditions1(Rest, add_cond(Acc, Key, "is", pack_value(Value)));
 build_conditions1([{Key, 'equals', Value}|Rest], Acc) ->
 	case is_foreign_key(Key) of
-		true -> 
+		true ->
 			{_Type, _TableName, TableId} = infer_type_from_id(Value),
 			build_conditions1(Rest, add_cond(Acc, Key, "=", pack_value(TableId)));
 		false -> build_conditions1(Rest, add_cond(Acc, Key, "=", pack_value(Value)))

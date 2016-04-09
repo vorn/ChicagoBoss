@@ -144,12 +144,12 @@ view_doc_root(ViewPath) ->
                 end;
             (_, Best) ->
                 Best
-        end, "", 
+        end, "",
         [boss_files:web_view_path(), boss_files:mail_view_path()]).
 
 compile_view_dir_erlydtl(LibPath, Module, OutDir, TranslatorPid) ->
     Res = erlydtl_compiler:compile_dir(LibPath, Module,
-        [{doc_root, view_doc_root(LibPath)}, {compiler_options, []}, 
+        [{doc_root, view_doc_root(LibPath)}, {compiler_options, []},
             {out_dir, OutDir}, {custom_tags_modules, [boss_erlydtl_tags]},
             {blocktrans_fun, fun(BlockName, Locale) ->
                     case boss_translator:lookup(TranslatorPid, BlockName, Locale) of
@@ -210,7 +210,7 @@ load_view_lib_if_old(ViewLibPath, Module, TranslatorPid) ->
     end.
 
 load_views(Application, OutDir, TranslatorPid) ->
-    ModuleList = lists:foldr(fun(Path, Acc) -> 
+    ModuleList = lists:foldr(fun(Path, Acc) ->
                 {ok, Module} = compile_view_erlydtl(Application, Path, OutDir, TranslatorPid),
                 [Module|Acc]
         end, [], boss_files:view_file_list()),
@@ -219,7 +219,7 @@ load_views(Application, OutDir, TranslatorPid) ->
 load_view_if_old(Application, ViewPath, Module, TranslatorPid) ->
     HelperModule = helper_module(Application),
     case load_view_lib_if_old(boss_files:view_lib_path(), HelperModule, TranslatorPid) of
-        {ok, _} -> 
+        {ok, _} ->
             NeedCompile = case module_is_loaded(Module) of
                 true ->
                     module_older_than(Module, lists:map(fun

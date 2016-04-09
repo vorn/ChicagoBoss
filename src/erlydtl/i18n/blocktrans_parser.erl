@@ -15,6 +15,6 @@ parse([{text, _, _}|Rest], Acc) ->
 % internal functions
 
 clean_crs(Tokens) ->
-	lists:map(fun(X) -> 
-			{element(1, X), list_to_binary(string:strip(binary_to_list(element(2, X)), both, $\n))} 
+	lists:map(fun(X) ->
+			{element(1, X), list_to_binary(string:strip(binary_to_list(element(2, X)), both, $\n))}
 		end, Tokens).

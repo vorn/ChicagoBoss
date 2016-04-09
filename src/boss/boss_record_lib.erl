@@ -25,8 +25,8 @@ run_hooks(Record, Type, Function) ->
 
 is_boss_record(Record, ModelList) when is_tuple(Record) andalso is_atom(element(1, Record)) ->
     Type = element(1, Record),
-    lists:member(atom_to_list(Type), ModelList) andalso 
-        erlang:function_exported(Type, attribute_names, 1) andalso 
+    lists:member(atom_to_list(Type), ModelList) andalso
+        erlang:function_exported(Type, attribute_names, 1) andalso
         erlang:function_exported(Type, new, tuple_size(Record) - 1);
 is_boss_record(_, _) ->
     false.

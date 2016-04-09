@@ -7,8 +7,8 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 -record(state, {
-        adapter, 
-        connection, 
+        adapter,
+        connection,
         shards = [],
         model_dict = dict:new(),
         cache_enable,
@@ -64,7 +64,7 @@ handle_call({find, Key}, _From, #state{ cache_enable = false } = State) ->
     {Adapter, Conn} = db_for_key(Key, State),
     {reply, Adapter:find(Conn, Key), State};
 
-handle_call({find, Type, Conditions, Max, Skip, Sort, SortOrder} = Cmd, From, 
+handle_call({find, Type, Conditions, Max, Skip, Sort, SortOrder} = Cmd, From,
     #state{ cache_enable = true, cache_prefix = Prefix } = State) ->
     Key = {Type, Conditions, Max, Skip, Sort, SortOrder},
     case boss_cache:get(Prefix, Key) of
@@ -72,7 +72,7 @@ handle_call({find, Type, Conditions, Max, Skip, Sort, SortOrder} = Cmd, From,
             io:format("Not cached: ~p~n", [Key]),
             {reply, Res, _} = handle_call(Cmd, From, State#state{ cache_enable = false }),
             boss_cache:set(Prefix, Key, Res, State#state.cache_ttl),
-            boss_news:set_watch(Key, lists:concat([inflector:pluralize(atom_to_list(Type)), ", ", Type, "-*.*"]), 
+            boss_news:set_watch(Key, lists:concat([inflector:pluralize(atom_to_list(Type)), ", ", Type, "-*.*"]),
                 fun boss_db_cache:handle_collection_news/3, {Prefix, Key}, State#state.cache_ttl),
             {reply, Res, State};
         CachedValue ->

@@ -8,7 +8,7 @@ start(_Type, _StartArgs) ->
   case application:get_env(session_adapter) of
       {ok, mnesia} ->
           mnesia:stop(),
-          mnesia:create_schema([node()]);		  
+          mnesia:create_schema([node()]);
       {ok, cache} ->
           boss_cache:start();
       _ -> ok
@@ -35,12 +35,12 @@ run_tests() ->
 	  [
 	   	fun(_) ->
 			{boss_session:get_session_data(SessionID, Key1) =:= Key1Value,
-			 "Key1 value not stored correctly in session"}	
+			 "Key1 value not stored correctly in session"}
 		end,
 	   	fun(_) ->
 			{boss_session:get_session_data(SessionID, Key2) =:= Key2Value,
-			 "Key2 value not stored correctly in session"}	
-		end		
+			 "Key2 value not stored correctly in session"}
+		end
 	   ],
 	   [ "Get all data from session",
 		 fun(_) ->
@@ -64,7 +64,7 @@ run_tests() ->
 				end
 			   ], [])
 		 end,
-		 
+
 	     "Get keys from session",
 		 fun(_) ->
 			do(
@@ -84,7 +84,7 @@ run_tests() ->
 				end
 			   ], [])
 		 end,
-		 
+
 	     "Removing keys",
 		 fun(_) ->
 			do(
@@ -105,7 +105,7 @@ run_tests() ->
 				end
 			   ], [])
 		 end,
-		 
+
 	     "Removing all session",
 		 fun(_) ->
 			do(
@@ -130,8 +130,8 @@ run_tests() ->
 					 "Key2 not removed correctly after session delete"}
 				end
 			   ], [])
-		 end		 		 		 
-		 
+		 end
+
 		]
 	  ).
 

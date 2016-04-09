@@ -11,8 +11,8 @@ process_assertions_and_continuations(Assertions, Continuations, ParsedResponse) 
         N ->
             io:format("~c[01;31m~3B failed~c[00m~n", [16#1B, N, 16#1B]),
             lists:map(fun(Msg) ->
-                        io:format("~s* ~c[01m~p~c[00m~n", 
-                            [lists:duplicate(boss_db:depth(), $\ ), 
+                        io:format("~s* ~c[01m~p~c[00m~n",
+                            [lists:duplicate(boss_db:depth(), $\ ),
                                 16#1B, Msg, 16#1B])
                 end, FailureMessages),
             io:format("Last response: ~p~n~n", [ParsedResponse]),
@@ -36,7 +36,7 @@ process_continuations(Continuations, Response) ->
 
 process_continuations([], _, {NumSuccesses, FailureMessages}) ->
     {NumSuccesses, lists:reverse(FailureMessages)};
-process_continuations([Name, Fun | Rest], Response, {NumSuccesses, FailureMessages}) 
+process_continuations([Name, Fun | Rest], Response, {NumSuccesses, FailureMessages})
         when is_list(Name) and is_function(Fun) ->
     io:format("~-60s", [lists:duplicate(boss_db:depth(), $\ ) ++ Name]),
     boss_db:push(),

@@ -18,7 +18,7 @@ init(Options) ->
     MaxAgeSeconds = proplists:get_value(max_age, Options, 60),
     Supervisor = proplists:get_value(supervisor, Options),
     Channel = proplists:get_value(channel, Options),
-    {ok, #state{max_age = MaxAgeSeconds, supervisor = Supervisor, channel = Channel, last_pull = erlang:now()}, 
+    {ok, #state{max_age = MaxAgeSeconds, supervisor = Supervisor, channel = Channel, last_pull = erlang:now()},
         MaxAgeSeconds * 1000}.
 
 handle_call(_From, _, State) ->
@@ -58,7 +58,7 @@ handle_cast({From, push, Message}, State) ->
                 Now
         end, State#state.last_pull, State#state.subscribers),
     gen_server:reply(From, {ok, Now}),
-    CurrentMessages = messages_newer_than_timestamp(now_to_micro_seconds(erlang:now()) - 
+    CurrentMessages = messages_newer_than_timestamp(now_to_micro_seconds(erlang:now()) -
         seconds_to_micro_seconds(State#state.max_age), State#state.messages),
     NewMessages = [{Message, Now}|CurrentMessages],
     {noreply, State#state{messages = NewMessages, subscribers = [], last_pull = LastPull}};

@@ -5,10 +5,10 @@
 %%
 %% Redistribution and use in source and binary forms, with or without
 %% modification, are permitted provided that the following conditions
-%% are met: 
+%% are met:
 %%
 %% 1. Redistributions of source code must retain the above copyright
-%%    notice, this list of conditions and the following disclaimer. 
+%%    notice, this list of conditions and the following disclaimer.
 %% 2. Redistributions in binary form must reproduce the above
 %%    copyright notice, this list of conditions and the following
 %%    disclaimer in the documentation and/or other materials provided
@@ -134,7 +134,7 @@ form(M, {function, Line, F, A, _Clss} = Form) ->
 	 ({call,Lc,{remote,Lr,{atom,Lm,Mod},{atom,Lf,Fn}},As}=E) ->
 	      case erlang:is_builtin(Mod, Fn, length(As)) of
 		  true ->
-		      smart_bif(M, F, A, Lc, 
+		      smart_bif(M, F, A, Lc,
 				Mod, Fn, length(As), As);
 		  false ->
 		      E
@@ -237,7 +237,7 @@ mk_try(Exprs, Cases, Exn_handlers, After) ->
 %% Body is what we do with it (should involve Rsn).
 
 exn_handler(Type, Rsn, Body) ->
-    {clause, -1, 
+    {clause, -1,
      [{tuple, -1, [{atom, -1, Type}, Rsn, {var, -1, '_'}]}],
      [],
      Body}.
@@ -261,7 +261,7 @@ smart_match(M, F, A, Line, Pat, Expr) ->
     AbsMatch = {tuple, -1, [{atom, -1, match}, X]},
     {'case', -1, Expr,
      [{clause, -1, [{match,-1,Pat,X}], [], [X]},
-      {clause, -1, [X], [], 
+      {clause, -1, [X], [],
        [{match, -1, Pat, smart_error(M, F, A, Line, AbsMatch)}]}]}.
 
 %% old alt: extract free vars and match each of them
@@ -285,7 +285,7 @@ smart_case(M, F, A, Line, Expr, Clss) ->
 %% M, F, A, Line, Rsn are concrete; Expr and Clss are abstract
 %% Note: the Expr is already rewritten
 %%
-%% Add extra clause: 
+%% Add extra clause:
 %%    true -> exit({{M,F,A},{line,Line},if_clause})
 
 smart_if(M, F, A, Line, Clss) ->
@@ -305,7 +305,7 @@ smart_fun(M, F, A, Line, Clss) ->
     Fun_args = {tuple, -1, [{atom, -1, fun_clause}] ++ Xs},
     Term = exn_term({M, F, A}, {line, Line}, Fun_args),
     {'fun', -1,
-     {clauses, 
+     {clauses,
       Clss ++ [{clause, -1, Xs, [], [mk_error(Term)]}]}}.
 
 %% Same as above, but preserves Info field too. This field is only added
@@ -321,7 +321,7 @@ smart_fun(M, F, A, Line, Clss, Info) ->
     Term = exn_term({M, F, A}, {line, Line}, Fun_args),
     {'fun', -1,
      {clauses,
-      Clss ++ [{clause, -1, Xs, [], [mk_error(Term)]}]}, 
+      Clss ++ [{clause, -1, Xs, [], [mk_error(Term)]}]},
      Info}.
 
 %% F(P1,...,Pk) -> B end
@@ -348,7 +348,7 @@ smart_function(M, F, A, Line, Clss) ->
 %%         error:Rsn -> error({{M,F,A},{line,L},{bif, F, Xs}})
 %%   end
 %%
-%% UNFINISHED - 
+%% UNFINISHED -
 %% - format of returned Rsn
 
 smart_bif(M, F, A, Line, Mod, Func, Arity, Args) ->
@@ -358,9 +358,9 @@ smart_bif(M, F, A, Line, Mod, Func, Arity, Args) ->
     %% currently returns {{bif, M, F, [X1,...,Xn]}, Rsn}
     %% should it be {bif, {M, F, [X1,...,Xn]}, Rsn}? something else?
     Bif = {tuple, -1,
-	   [{tuple, -1, [{atom, -1, bif}, 
-			 {atom, -1, Mod}, 
-			 {atom, -1, Func}, 
+	   [{tuple, -1, [{atom, -1, bif},
+			 {atom, -1, Mod},
+			 {atom, -1, Func},
 			 cons_list(Xs)]},
 	    {tuple, -1, [{atom, -1, reason}, Rsn]}]},
     Exn_term = exn_term({M, F, A}, {line, Line}, Bif),
@@ -377,8 +377,8 @@ mk_remote_call(M, F, Xs) ->
 
 %% Rewrite to
 %%   X1 = E1, X2 = E2,
-%%   try X1 Binop X2 
-%%   catch 
+%%   try X1 Binop X2
+%%   catch
 %%         error:Rsn -> error({{M,F,A},{line,L},{Binop, X1, X2}})
 %%   end
 %%
@@ -390,7 +390,7 @@ smart_binop(M, F, A, Line, Op, E1, E2) ->
     X2 = new_var(),
     Rsn = new_var(),
     Exn_rsn = {tuple, -1,
-	       [{atom, -1, binop}, {atom, -1, Op}, cons_list([X1, X2]), 
+	       [{atom, -1, binop}, {atom, -1, Op}, cons_list([X1, X2]),
 		{tuple, -1, [{atom, -1, reason}, Rsn]}]},
     Exn_term = exn_term({M, F, A}, {line, Line}, Exn_rsn),
     {block, -1,
@@ -409,9 +409,9 @@ mk_unop(Op, X1) ->
     {op, -1, Op, X1}.
 
 %% Rewrite to
-%%   X1 = E1, 
+%%   X1 = E1,
 %%   try Unop(X1)
-%%   catch 
+%%   catch
 %%         error:Rsn -> error({{M,F,A},{line,L},{Unop, X1}})
 %%   end
 %%
@@ -422,7 +422,7 @@ smart_unop(M, F, A, Line, Op, Expr) ->
     X = new_var(),
     Rsn = new_var(),
     Exn_rsn = {tuple, -1,
-	       [{atom, -1, unop}, {atom, -1, Op}, cons_list([X]), 
+	       [{atom, -1, unop}, {atom, -1, Op}, cons_list([X]),
 		{tuple, -1, [{atom, -1, reason}, Rsn]}]},
     Exn_term = exn_term({M, F, A}, {line, Line}, Exn_rsn),
     {block, -1,
@@ -487,7 +487,7 @@ bin_error({bin, Lb, BinElts}=Expr, AbsRsn) ->
     {tuple, -1,
      lists:flatten(
        [ bin_indicator(P, Lbe, Type, Width)
-	 || {bin_element, Lbe, P, Type, Width} <- BinElts ]) 
+	 || {bin_element, Lbe, P, Type, Width} <- BinElts ])
      ++ [{tuple, -1, [{atom, -1, reason}, AbsRsn]}]}.
 
 %% Emit variable name, value and expected type/width for all elements.

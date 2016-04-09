@@ -2,7 +2,7 @@
 % MISULTIN - WebSocket
 %
 % >-|-|-(°>
-% 
+%
 % Copyright (C) 2010, Roberto Ostinelli <roberto@ostinelli.net>, Joe Armstrong.
 % All rights reserved.
 %
@@ -10,7 +10,7 @@
 % <http://armstrongonsoftware.blogspot.com/2009/12/comet-is-dead-long-live-websockets.html>
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -76,8 +76,8 @@ connect(#ws{socket = Socket, socket_mode = SocketMode, origin = Origin, host = H
 	% add main websocket pid to misultin server reference
 	misultin:persistent_socket_pid_add(self()),
 	% start listening for incoming data
-	ws_loop(Socket, none, WsHandleLoopPid, SocketMode).	
-	
+	ws_loop(Socket, none, WsHandleLoopPid, SocketMode).
+
 % ============================ /\ API ======================================================================
 
 

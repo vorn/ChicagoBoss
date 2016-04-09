@@ -13,7 +13,7 @@ start(Options) ->
     DBUsername = proplists:get_value(db_username, Options, "guest"),
     DBPassword = proplists:get_value(db_password, Options, ""),
     DBDatabase = proplists:get_value(db_database, Options, "test"),
-    pgsql:connect(DBHost, DBUsername, DBPassword, 
+    pgsql:connect(DBHost, DBUsername, DBPassword,
         [{port, DBPort}, {database, DBDatabase}]).
 
 stop(Conn) ->
@@ -34,8 +34,8 @@ find(Conn, Id) when is_list(Id) ->
             {error, Reason}
     end.
 
-find(Conn, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_list(Conditions), 
-                                                              is_integer(Max), is_integer(Skip), 
+find(Conn, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_list(Conditions),
+                                                              is_integer(Max), is_integer(Skip),
                                                               is_atom(Sort), is_atom(SortOrder) ->
     case model_is_loaded(Type) of
         true ->
@@ -55,7 +55,7 @@ find(Conn, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_
 count(Conn, Type, Conditions) ->
     ConditionClause = build_conditions(Conditions),
     TableName = type_to_table_name(Type),
-    {ok, _, [{Count}]} = pgsql:equery(Conn, 
+    {ok, _, [{Count}]} = pgsql:equery(Conn,
         ["SELECT COUNT(*) AS count FROM ", TableName, " WHERE ", ConditionClause]),
     Count.
 
@@ -67,12 +67,12 @@ counter(Conn, Id) when is_list(Id) ->
     end.
 
 incr(Conn, Id, Count) ->
-    Res = pgsql:equery(Conn, "UPDATE counters SET value = value + $1 WHERE name = $2 RETURNING value", 
+    Res = pgsql:equery(Conn, "UPDATE counters SET value = value + $1 WHERE name = $2 RETURNING value",
         [Count, Id]),
     case Res of
         {ok, _, _, [{Value}]} -> Value;
-        {error, _Reason} -> 
-            Res1 = pgsql:equery(Conn, "INSERT INTO counters (name, value) VALUES ($1, $2) RETURNING value", 
+        {error, _Reason} ->
+            Res1 = pgsql:equery(Conn, "INSERT INTO counters (name, value) VALUES ($1, $2) RETURNING value",
                 [Id, Count]),
             case Res1 of
                 {ok, _, _, [{Value}]} -> Value;
@@ -84,7 +84,7 @@ delete(Conn, Id) when is_list(Id) ->
     {_, TableName, TableId} = infer_type_from_id(Id),
     Res = pgsql:equery(Conn, ["DELETE FROM ", TableName, " WHERE id = $1"], [TableId]),
     case Res of
-        {ok, _Count} -> 
+        {ok, _Count} ->
             pgsql:equery(Conn, "DELETE FROM counters WHERE name = $1", [Id]),
             ok;
         {error, Reason} -> {error, Reason}
@@ -155,7 +155,7 @@ activate_record(Record, Metadata, Type) ->
                         {Date, {_, _, S} = Time} when is_float(S) ->
                             {Date, setelement(3, Time, round(S))};
                         undefined -> undefined;
-                        Val -> 
+                        Val ->
                             case lists:suffix("_id", KeyString) of
                                 true -> integer_to_id(Val, KeyString);
                                 false -> Val
@@ -212,7 +212,7 @@ build_insert_query(Record) ->
                 end,
                 {[AString|Attrs], [pack_value(Value)|Vals]}
         end, {[], []}, Record:attributes()),
-    ["INSERT INTO ", TableName, " (", 
+    ["INSERT INTO ", TableName, " (",
         string:join(Attributes, ", "),
         ") values (",
         string:join(Values, ", "),
@@ -224,7 +224,7 @@ build_update_query(Record) ->
     {_, TableName, Id} = infer_type_from_id(Record:id()),
     Updates = lists:foldl(fun
             ({id, _}, Acc) -> Acc;
-            ({A, V}, Acc) -> 
+            ({A, V}, Acc) ->
                 AString = atom_to_list(A),
                 Value = case lists:suffix("_id", AString) of
                     true ->
@@ -240,10 +240,10 @@ build_update_query(Record) ->
 
 build_select_query(Type, Conditions, Max, Skip, Sort, SortOrder) ->
     TableName = type_to_table_name(Type),
-    ["SELECT * FROM ", TableName, 
+    ["SELECT * FROM ", TableName,
         " WHERE ", build_conditions(Conditions),
         " ORDER BY ", atom_to_list(Sort), " ", sort_order_sql(SortOrder),
-        " LIMIT ", integer_to_list(Max), 
+        " LIMIT ", integer_to_list(Max),
         " OFFSET ", integer_to_list(Skip)
     ].
 
@@ -255,7 +255,7 @@ is_foreign_key(Key) when is_atom(Key) ->
 	KeyTokens = string:tokens(atom_to_list(Key), "_"),
 	LastToken = hd(lists:reverse(KeyTokens)),
 	case (length(KeyTokens) > 1 andalso LastToken == "id") of
-		true -> 
+		true ->
 			Module = join(lists:reverse(tl(lists:reverse(KeyTokens))), "_"),
     		case code:is_loaded(list_to_atom(Module)) of
         		{file, _Loaded} -> true;
@@ -274,7 +274,7 @@ build_conditions1([{Key, 'equals', Value}|Rest], Acc) when Value == undefined ->
     build_conditions1(Rest, add_cond(Acc, Key, "is", pack_value(Value)));
 build_conditions1([{Key, 'equals', Value}|Rest], Acc) ->
     case is_foreign_key(Key) of
-        true -> 
+        true ->
             {_Type, _TableName, TableId} = infer_type_from_id(Value),
             build_conditions1(Rest, add_cond(Acc, Key, "=", pack_value(TableId)));
         false -> build_conditions1(Rest, add_cond(Acc, Key, "=", pack_value(Value)))

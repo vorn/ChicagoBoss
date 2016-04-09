@@ -10,27 +10,27 @@
 ]).
 
 
-%% @todo could not figure out how to get the socket from misultin 
-%% so could not implement socket/1, recv_from_socket/3 that are 
-%% present in other request modules 
+%% @todo could not figure out how to get the socket from misultin
+%% so could not implement socket/1, recv_from_socket/3 that are
+%% present in other request modules
 
-init(Req) -> 
+init(Req) ->
     Req.
 
-request_method(Req) -> 
+request_method(Req) ->
     Req:get(method).
 
-path(Req) -> 
+path(Req) ->
     {abs_path,Path} = Req:get(uri),
     Path.
 
 uri(Req) ->
     Req:get(uri).
 
-peer_ip(Req) -> 
+peer_ip(Req) ->
     Req:get(peer_addr).
 
-peer_port(Req) -> 
+peer_port(Req) ->
     Req:get(peer_port).
 
 headers(Req) ->
@@ -65,7 +65,7 @@ cookies(Req) ->
     F = fun(Cookie) ->
         case string:tokens(Cookie, "=") of
             [] -> [];
-            L -> 
+            L ->
                 X = string:strip(hd(L)),
                 Y = string:join(tl(L), "="),
                 {X, Y}
@@ -74,7 +74,7 @@ cookies(Req) ->
     [F(X) || X <- string:tokens(CookieData, ";")].
 
 query_params(Req) ->
-    Req:parse_qs().	
+    Req:parse_qs().
 
 post_params(Req) ->
     Req:parse_post().

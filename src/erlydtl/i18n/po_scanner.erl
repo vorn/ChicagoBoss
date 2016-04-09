@@ -14,7 +14,7 @@
 %%
 %% API Functions
 %%
-scan(Path) -> 
+scan(Path) ->
     case file:read_file(Path) of
         {ok,File} ->
 			Str = re:replace(File, "\\\\n", "\\\n", [global, {return,list}]),
@@ -25,22 +25,22 @@ scan(Path) ->
     end.
 
 
-scan("#" ++ T, Scanned, {Row, Column}, Status = [in_text]) -> 
+scan("#" ++ T, Scanned, {Row, Column}, Status = [in_text]) ->
     scan(T, Scanned, {Row, Column + 1}, lists:append([{in_comment, []}],Status));
-scan("\n" ++ T, Scanned, {Row, _Column}, [{in_comment, Comment}|Status]) -> 
+scan("\n" ++ T, Scanned, {Row, _Column}, [{in_comment, Comment}|Status]) ->
     scan(T, lists:append(Scanned, [{comment, Comment}]), {Row +1 , 1}, Status);
 scan([Head | T], Scanned, {Row, Column}, _Status = [{in_comment, Comment}|Stack]) ->
     NewStatus = lists:append([{in_comment, lists:append(Comment,[Head])}],Stack),
     scan(T, Scanned, {Row, Column + 1}, NewStatus);
 
 %%Msg id
-scan("msgid" ++ T, Scanned, {Row, Column}, Status = [in_text]) ->  
+scan("msgid" ++ T, Scanned, {Row, Column}, Status = [in_text]) ->
     scan(T, Scanned, {Row, Column + 5}, lists:append([{in_message_id, []}],Status));
 
-%%scan("msgid" ++ T, Scanned, {Row, Column}, [{in_message_str, Body}|Stack]) ->  
+%%scan("msgid" ++ T, Scanned, {Row, Column}, [{in_message_str, Body}|Stack]) ->
 %%	scan(T, lists:append(Scanned , [{str, Body}]), {Row, Column + 5}, lists:append([{in_message_id, []}],Stack));
 
-scan("\n\n" ++ T, Scanned, {Row, _Column}, [{in_message_str, Body}|Stack]) ->  
+scan("\n\n" ++ T, Scanned, {Row, _Column}, [{in_message_str, Body}|Stack]) ->
     scan(T, lists:append(Scanned , [{str, Body}]), {Row + 2, 1}, Stack);
 scan("\n", Scanned, {Row, _Column}, [{in_message_str, Body}|Stack]) ->
     scan([], lists:append(Scanned , [{str, Body}]), {Row + 2, 1}, Stack);
@@ -82,8 +82,8 @@ end_of_string(String, [{in_message_id, Body}|Stack] ,T, Scanned, Row, Column) ->
     scan(T, Scanned, {Row, Column}, [{in_message_id, lists:append(Body ,String)} | Stack ]);
 end_of_string(String, [{in_message_str, Body}|Stack] , T, Scanned, Row, Column) ->
     scan(T, Scanned, {Row, Column }, [{in_message_str, lists:append(Body,String)} |Stack ]).
-	
-	
+
+
 
 %%
 %% Local Functions

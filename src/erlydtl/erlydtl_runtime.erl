@@ -26,7 +26,7 @@ find_value(Key, {GBSize, GBData}) when is_integer(GBSize) ->
 find_value(Key, Tuple) when is_tuple(Tuple) ->
     Module = element(1, Tuple),
     case Module of
-        dict -> 
+        dict ->
             case dict:find(Key, Tuple) of
                 {ok, Val} ->
                     Val;
@@ -171,11 +171,11 @@ init_counter_stats(List) ->
     init_counter_stats(List, undefined).
 
 init_counter_stats(List, Parent) ->
-    [{counter, 1}, 
-        {counter0, 0}, 
-        {revcounter, length(List)}, 
-        {revcounter0, length(List) - 1}, 
-        {first, true}, 
+    [{counter, 1},
+        {counter0, 0},
+        {revcounter, length(List)},
+        {revcounter0, length(List) - 1},
+        {first, true},
         {last, length(List) =:= 1},
         {parentloop, Parent}].
 

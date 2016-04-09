@@ -2,12 +2,12 @@
 % MISULTIN - Main
 %
 % >-|-|-(°>
-% 
+%
 % Copyright (C) 2010, Roberto Ostinelli <roberto@ostinelli.net>.
 % All rights reserved.
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -50,17 +50,17 @@ get_http_status_code(301) ->
 get_http_status_code(400) ->
 	"HTTP/1.1 400 Bad Request\r\n";
 get_http_status_code(401) ->
-	"HTTP/1.1 401 Unauthorized\r\n";	
+	"HTTP/1.1 401 Unauthorized\r\n";
 get_http_status_code(403) ->
 	"HTTP/1.1 403 Forbidden\r\n";
 get_http_status_code(404) ->
-	"HTTP/1.1 404 Not Found\r\n";				
+	"HTTP/1.1 404 Not Found\r\n";
 get_http_status_code(408) ->
-	"HTTP/1.1 408 Request Timeout\r\n";			
+	"HTTP/1.1 408 Request Timeout\r\n";
 get_http_status_code(500) ->
 	"HTTP/1.1 500 Internal Server Error\r\n";
 get_http_status_code(501) ->
-	"HTTP/1.1 501 Not Implemented\r\n";				
+	"HTTP/1.1 501 Not Implemented\r\n";
 % less common last
 get_http_status_code(201) ->
 	"HTTP/1.1 201 Created\r\n";
@@ -154,7 +154,7 @@ get_content_type(FileName) ->
 		".mpeg" -> "video/mpeg";
 		".mpg" -> "video/mpeg";
 		".mov" -> "video/quicktime";
-		".avi" -> "video/x-msvideo";	
+		".avi" -> "video/x-msvideo";
 		% less common last
 		".evy" -> "application/envoy";
 		".fif" -> "application/fractals";

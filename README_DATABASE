@@ -24,7 +24,7 @@ a serial integer. (However, the generated BossRecord ID exposed to your
 application will still have the form "model_name-1".)
 
 To use the counter features, you need a table called "counters" with a "name"
-and "value" column, like these: 
+and "value" column, like these:
 
 CREATE TABLE counters (
     name                VARCHAR(255) PRIMARY KEY,

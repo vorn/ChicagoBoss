@@ -92,7 +92,7 @@ write (Write) ->
 	Context = get (mongo_action_context),
 	case Context #context.write_mode of
 		unsafe -> mongo_query:write (Context #context.dbconn, Write);
-		SafeMode -> 
+		SafeMode ->
 			Params = case SafeMode of safe -> {}; {safe, Param} -> Param end,
 			Ack = mongo_query:write (Context #context.dbconn, Write, Params),
 			case bson:lookup (err, Ack) of

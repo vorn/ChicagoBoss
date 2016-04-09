@@ -1,6 +1,6 @@
 % Routes file.
 
-% Formats: 
+% Formats:
 %     {"/some/route", {"Controller", "Action"}}.
 %     {"/some/route", {"Controller", "Action", [{id, "42"}]}}.
 %     {404, {"Controller", "Action"}}.

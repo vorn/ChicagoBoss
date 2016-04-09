@@ -85,26 +85,26 @@ filter_rec(Rec, [First|Rest]) ->
 
 apply_sort([], _Key, _Order) ->
     [];
-apply_sort(List, primary, Order) ->    
+apply_sort(List, primary, Order) ->
     apply_sort(List, id, Order);
-apply_sort(List, Key, str_ascending) ->    
+apply_sort(List, Key, str_ascending) ->
     apply_sort(List, Key, ascending);
-apply_sort(List, Key, str_descending) ->    
+apply_sort(List, Key, str_descending) ->
     apply_sort(List, Key, descending);
-apply_sort(List, Key, ascending) ->    
+apply_sort(List, Key, ascending) ->
     Fun = fun (A, B) -> apply(A,Key,[]) =< apply(B,Key,[]) end,
     lists:sort(Fun, List);
-apply_sort(List, Key, descending) ->    
+apply_sort(List, Key, descending) ->
     Fun = fun (A, B) -> apply(A,Key,[]) >= apply(B,Key,[]) end,
     lists:sort(Fun, List).
 
 
 
-apply_skip(List, 0) -> 
+apply_skip(List, 0) ->
     List;
-apply_skip(List, Skip) when Skip >= length(List) -> 
+apply_skip(List, Skip) when Skip >= length(List) ->
     [];
-apply_skip(List, Skip) -> 
+apply_skip(List, Skip) ->
     lists:nthtail(Skip, List).
 
 apply_max(List, Max) when Max>0, length(List) > Max ->
@@ -201,7 +201,7 @@ save_record(_, Record) when is_tuple(Record) ->
     RecordWithId = Record:id(Id),
 
     Fun = fun() -> mnesia:write(Type, RecordWithId, write) end,
-    
+
     case mnesia:transaction(Fun) of
 	    {atomic, ok} ->
 	        {ok, RecordWithId};
@@ -235,7 +235,7 @@ model_is_loaded(Type) ->
         false -> false
     end.
 
-%----- 
+%-----
 build_query(Type, Conditions, _Max, _Skip, _Sort, _SortOrder) -> % a Query is a {Pattern, Filter} combo
     Fldnames = mnesia:table_info(Type, attributes),
     BlankPattern = [ {Fld, '_'} || Fld <- Fldnames],

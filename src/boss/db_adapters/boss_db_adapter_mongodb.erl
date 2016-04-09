@@ -8,7 +8,7 @@
 -define(LOG(Name, Value), io:format("DEBUG: ~s: ~p~n", [Name, Value])).
 
 % Number of seconds between beginning of gregorian calendar and 1970
--define(GREGORIAN_SECONDS_1970, 62167219200). 
+-define(GREGORIAN_SECONDS_1970, 62167219200).
 
 % JavaScript expression formats to query MongoDB
 -define(CONTAINS_FORMAT, "this.~s.indexOf('~s') != -1").
@@ -37,7 +37,7 @@ execute({WriteMode, ReadMode, Connection, Database}, Fun) ->
 
 find(Conn, Id) when is_list(Id) ->
     {Type, Collection, MongoId} = infer_type_from_id(Id),
-    
+
     Res = execute(Conn, fun() ->
                 mongo:find_one(Collection, {'_id', MongoId})
         end),
@@ -49,8 +49,8 @@ find(Conn, Id) when is_list(Id) ->
         {connection_failure, Reason} -> {error, Reason}
     end.
 
-find(Conn, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_list(Conditions), 
-                                                              is_integer(Max), is_integer(Skip), 
+find(Conn, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_list(Conditions),
+                                                              is_integer(Max), is_integer(Skip),
                                                               is_atom(Sort), is_atom(SortOrder) ->
 %    ?LOG("find Type", Type),
 %    ?LOG("find Conditions", Conditions),
@@ -58,10 +58,10 @@ find(Conn, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_
         true ->
             Collection = type_to_collection(Type),
             Res = execute(Conn, fun() ->
-                    Selector = build_conditions(Conditions, 
+                    Selector = build_conditions(Conditions,
                                                 {Sort, pack_sort_order(SortOrder)}),
                     mongo:find(Collection, Selector, [],
-                               Skip, Max) 
+                               Skip, Max)
                 end),
             case Res of
                 {ok, Curs} ->
@@ -77,7 +77,7 @@ find(Conn, Type, Conditions, Max, Skip, Sort, SortOrder) when is_atom(Type), is_
 
 count(Conn, Type, Conditions) ->
     Collection = type_to_collection(Type),
-    {ok, Count} = execute(Conn, fun() -> 
+    {ok, Count} = execute(Conn, fun() ->
                 C = build_conditions(Conditions),
 %                ?LOG("Conditions", C),
                 mongo:count(Collection, C)
@@ -90,7 +90,7 @@ counter(Conn, Id) when is_list(Id) ->
                 mongo:find_one(boss_counters, {'name', list_to_binary(Id)})
         end),
     case Res of
-        {ok, {Doc}} -> 
+        {ok, {Doc}} ->
             PropList = tuple_to_proplist(Doc),
             proplists:get_value(value, PropList);
         {failure, Reason} -> {error, Reason};
@@ -101,8 +101,8 @@ incr(Conn, Id) ->
     incr(Conn, Id, 1).
 
 incr(Conn, Id, Count) ->
-    Res = execute(Conn, fun() -> 
-                 mongo:repsert(boss_counters, 
+    Res = execute(Conn, fun() ->
+                 mongo:repsert(boss_counters,
                          {'name', list_to_binary(Id)},
                          {'$inc', {value, Count}}
                          )
@@ -115,7 +115,7 @@ incr(Conn, Id, Count) ->
 
 delete(Conn, Id) when is_list(Id) ->
     {_Type, Collection, MongoId} = infer_type_from_id(Id),
-    
+
     Res = execute(Conn, fun() ->
                 mongo:delete(Collection, {'_id', MongoId})
         end),
@@ -131,19 +131,19 @@ save_record(Conn, Record) when is_tuple(Record) ->
     Collection = type_to_collection(Type),
     Attributes = case Record:id() of
         id ->
-            PropList = lists:map(fun({K,V}) -> 
+            PropList = lists:map(fun({K,V}) ->
                             case is_id_attr(K) of
                                 true -> {K, pack_id(V)};
                                 false -> {K, pack_value(V)}
                             end
-                end, 
+                end,
                                  Record:attributes()),
             proplist_to_tuple(proplists:delete(id, PropList));
         DefinedId when is_list(DefinedId) ->
             PropList = lists:map(fun({K,V}) ->
-                            case K of 
+                            case K of
                                 id -> {'_id', pack_id(DefinedId)};
-                                _ -> 
+                                _ ->
                                     case is_id_attr(K) of
                                         true -> {K, pack_id(V)};
                                         false -> {K, pack_value(V)}
@@ -152,12 +152,12 @@ save_record(Conn, Record) when is_tuple(Record) ->
                     end, Record:attributes()),
             proplist_to_tuple(PropList)
     end,
-    Res = execute(Conn, fun() -> 
+    Res = execute(Conn, fun() ->
                 mongo:save(Collection, Attributes)
         end),
     case Res of
         {ok, ok} -> {ok, Record};
-        {ok, Id} -> 
+        {ok, Id} ->
             {ok, Record:id(unpack_id(Type, Id))};
         {failure, Reason} -> {error, Reason};
         {connection_failure, Reason} -> {error, Reason}
@@ -192,7 +192,7 @@ build_conditions1([], Acc) ->
 build_conditions1([{Key, Operator, Value}|Rest], Acc) ->
 %    ?LOG("Key, Operator, Value", {Key, Operator, Value}),
 
-    Condition = case {Operator, Value} of 
+    Condition = case {Operator, Value} of
         {'not_matches', Value} ->
             [{Key, {'$not', {regex, list_to_binary(Value), <<"">>}}}];
         {'matches', Value} ->
@@ -221,26 +221,26 @@ build_conditions1([{Key, Operator, Value}|Rest], Acc) ->
             WhereClause = multiple_where_clauses(
                 ?NOT_CONTAINS_FORMAT, Key, ValueList, "&&"),
             [{'$where', WhereClause}];
-        {'equals', Value} when is_list(Value) -> 
-            case is_id_attr(Key) of 
-                true -> 
+        {'equals', Value} when is_list(Value) ->
+            case is_id_attr(Key) of
+                true ->
                     [{Key, pack_id(Value)}];
-                false -> 
+                false ->
                     [{Key, list_to_binary(Value)}]
             end;
-        {'not_equals', Value} when is_list(Value) -> 
+        {'not_equals', Value} when is_list(Value) ->
             [{Key, {'$ne', list_to_binary(Value)}}];
-        {'equals', {{_,_,_},{_,_,_}} = Value} -> 
+        {'equals', {{_,_,_},{_,_,_}} = Value} ->
             [{Key, datetime_to_now(Value)}];
-        {'equals', Value} -> 
+        {'equals', Value} ->
             [{Key, Value}];
-        {Operator, {{_,_,_},{_,_,_}} = Value} -> 
+        {Operator, {{_,_,_},{_,_,_}} = Value} ->
             [{Key, {boss_to_mongo_op(Operator), datetime_to_now(Value)}}];
-        {'in', {Min, Max}} -> 
+        {'in', {Min, Max}} ->
             [{Key, {'$gte', Min}}, {Key, {'$lte', Max}}];
-        {'not_in', {Min, Max}} -> 
+        {'not_in', {Min, Max}} ->
             [{'$or', [{Key, {'$lt', Min}}, {Key, {'$gt', Max}}]}];
-        {Operator, Value} -> 
+        {Operator, Value} ->
             [{Key, {boss_to_mongo_op(Operator), Value}}]
     end,
 %    ?LOG("Condition", Condition),
@@ -261,7 +261,7 @@ multiple_where_clauses(Format, Key, ValueList, Operator) ->
             ValueList, Operator)).
 
 
-%% 
+%%
 %% Boss models introspection
 %%
 
@@ -284,7 +284,7 @@ is_id_attr(AttrName) ->
     lists:suffix("_id", atom_to_list(AttrName)).
 
 
-%% 
+%%
 %% Conversion between Chicago Boss en MongoDB
 %%
 
@@ -318,8 +318,8 @@ pack_id(BossId) ->
         [_, MongoId] = string:tokens(BossId, "-"),
         {hex2dec(MongoId)}
     catch
-        Error:Reason -> 
-            error_logger:warning_msg("Error parsing Boss record id: ~p:~p~n", 
+        Error:Reason ->
+            error_logger:warning_msg("Error parsing Boss record id: ~p:~p~n",
                 [Error, Reason]),
             []
     end.
@@ -346,17 +346,17 @@ unpack_value(AttrName, {_,_,_} = Value, _) ->
 unpack_value(_AttrName, [H|T], _) when is_integer(H) ->
     {integers, [H|T]};
 unpack_value(AttrName, Value, _RecordType) ->
-    case is_id_attr(AttrName) and (Value =/= "") of 
-        true -> 
+    case is_id_attr(AttrName) and (Value =/= "") of
+        true ->
             IdType = id_type_from_foreign_key(AttrName),
             unpack_id(IdType, Value);
-        false -> 
+        false ->
             Value
     end.
 
 id_type_from_foreign_key(ForeignKey) ->
     Tokens = string:tokens(atom_to_list(ForeignKey), "_"),
-    NameTokens = lists:filter(fun(Token) -> Token =/= "id" end, 
+    NameTokens = lists:filter(fun(Token) -> Token =/= "id" end,
         Tokens),
     string:join(NameTokens, "_").
 
@@ -379,7 +379,7 @@ pack_sort_order(num_descending) -> -1.
 
 
 
-%% 
+%%
 %% Generic data structure conversions
 %%
 
@@ -394,7 +394,7 @@ proplist_to_tuple(PropList) ->
     ListOfLists = lists:reverse([[K,V]||{K,V} <- PropList]),
     list_to_tuple(lists:foldl(
             fun([K, V], Acc) ->
-                    [K,V|Acc] 
+                    [K,V|Acc]
             end, [], ListOfLists)).
 
 list_to_proplist([], Acc) -> Acc;
@@ -411,10 +411,10 @@ datetime_to_now(DateTime) ->
 %% Decimal to hexadecimal conversion
 %%
 %% Functions below copied from emongo <https://github.com/boorad/emongo>
-%% 
-%% Copyright (c) 2009 Jacob Vorreuter <jacob.vorreuter@gmail.com> 
-%% Jacob Perkins <japerk@gmail.com> 
-%% Belyaev Dmitry <rumata-estor@nm.ru> 
+%%
+%% Copyright (c) 2009 Jacob Vorreuter <jacob.vorreuter@gmail.com>
+%% Jacob Perkins <japerk@gmail.com>
+%% Belyaev Dmitry <rumata-estor@nm.ru>
 %% François de Metz <fdemetz@af83.com>
 %%
 

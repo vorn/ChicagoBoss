@@ -9,11 +9,11 @@ boss_env() ->
         Val -> Val
     end.
 
-setup_boss_env() ->	
+setup_boss_env() ->
     case boss_load:module_is_loaded(reloader) of
         true -> put(boss_environment, development), development;
         false -> put(boss_environment, production), production
-    end.			
+    end.
 
 get_env(App, Key, Default) when is_atom(App), is_atom(Key) ->
     case application:get_env(App, Key) of

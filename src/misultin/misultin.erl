@@ -2,7 +2,7 @@
 % MISULTIN - Main
 %
 % >-|-|-(°>
-% 
+%
 % Copyright (C) 2010, Roberto Ostinelli <roberto@ostinelli.net>, Sean Hinde.
 % All rights reserved.
 %
@@ -10,7 +10,7 @@
 % <http://www.trapexit.org/A_fast_web_server_demonstrating_some_undocumented_Erlang_features>
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -211,7 +211,7 @@ handle_cast({add_ws_pid, PsPid}, #state{persistent_sock_references = PersistentS
 % remove persistent socket reference from server
 handle_cast({remove_ws_pid, PsPid}, #state{persistent_sock_references = PersistentSockReferences} = State) ->
 	{noreply, State#state{persistent_sock_references = lists:delete(PsPid, PersistentSockReferences)}};
-	
+
 % handle_cast generic fallback (ignore)
 handle_cast(_Msg, State) ->
 	?LOG_WARNING("received unknown cast message: ~p", [_Msg]),
@@ -273,7 +273,7 @@ check_and_convert_string_to_ip(Ip) ->
 		{ok, IpTuple} ->
 			IpTuple
 	end.
-	
+
 % Function: -> true | false
 % Description: Checks if all necessary Ssl Options have been specified
 check_ssl_options(SslOptions) ->
@@ -294,14 +294,14 @@ get_option({OptionName, DefaultValue, CheckAndConvertFun, FailTypeError}, Option
 			case DefaultValue of
 				{error, Reason} ->
 					{error, Reason};
-				Value -> 
+				Value ->
 					{OptionName, Value}
 			end;
 		Value ->
 			case CheckAndConvertFun(Value) of
 				false ->
 					{error, {FailTypeError, Value}};
-				true -> 
+				true ->
 					{OptionName, Value};
 				OutValue ->
 					{OptionName, OutValue}

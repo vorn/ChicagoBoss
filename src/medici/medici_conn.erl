@@ -14,7 +14,7 @@
 %%% @copyright Copyright (c) 2009, Jim McCoy.  All Rights Reserved.
 %%%
 %%% @doc
-%%% The medici_conn module handles a single principe connection to the Tyrant 
+%%% The medici_conn module handles a single principe connection to the Tyrant
 %%% remote database.  If is a simple gen_server that will dispatch requests
 %%% to the remote database and exit if its connection to the remote database
 %%% closes so that its supervisor can start another connection handler.
@@ -47,7 +47,7 @@ start_link(StartArgs) ->
 %%====================================================================
 
 %% @spec init(Args) -> {ok, State} | {stop, Reason}
-%% @private 
+%% @private
 %% Initiates the server. Basically decides if we are talking to a remote
 %% Tyrant database in table mode or hash/b-tree/fixed mode and sets the
 %% server to use the appropriate principe access module for its calls.
@@ -70,7 +70,7 @@ init(MediciOpts) ->
     end.
 
 %% @spec handle_call(Request, From, State) -> {stop, Reason, State}
-%% @private 
+%% @private
 %% Handle call messages. Since none are expected (all calls should come in
 %% as casts) a call message will result in termination of the server.
 %% @end
@@ -171,7 +171,7 @@ handle_info(_Info, State) ->
     {noreply, State}.
 
 %% @spec terminate(Reason, State) -> void()
-%% @private 
+%% @private
 %% Server termination.  Will sync remote database, close connection, and
 %% notify controller that it is shutting down.
 %% @end
@@ -209,19 +209,19 @@ get_db_type(Socket) when is_port(Socket) ->
 		    Endian = big
 	    end,
 	    case proplists:get_value(type, StatList) of
-		"on-memory hash" -> 
+		"on-memory hash" ->
 		    Type = hash;
-		"table" -> 
+		"table" ->
 		    Type = table;
-		"on-memory tree" -> 
+		"on-memory tree" ->
 		    Type = tree;
-		"B+ tree" -> 
+		"B+ tree" ->
 		    Type = tree;
 		"hash" ->
 		    Type = hash;
 		"fixed-length" ->
 		    Type = fixed;
-		_ -> 
+		_ ->
 		    ?DEBUG_LOG("~p:get_db_type returned ~p~n", [?MODULE, proplists:get_value(type, StatList)]),
 		    Type = error
 	    end,
@@ -230,7 +230,7 @@ get_db_type(Socket) when is_port(Socket) ->
 		    {error, unknown_db_type};
 		_ ->
 		    {ok, Endian, Type}
-	    end	    
+	    end
     end.
 
 tune_db(State) ->
@@ -241,7 +241,7 @@ tune_db(State) ->
 	    {error, Reason};
 	StatList ->
 	    case proplists:get_value(type, StatList) of
-		"on-memory hash" -> 
+		"on-memory hash" ->
 		    Records = list_to_integer(proplists:get_value(rnum, StatList)),
 		    BnumInt = Records * 4,
 		    TuningParam = "bnum=" ++ integer_to_list(BnumInt),
@@ -251,7 +251,7 @@ tune_db(State) ->
 		    BnumInt = Records * 4,
 		    TuningParam = "bnum=" ++ integer_to_list(BnumInt),
 		    principe:optimize(State#state.socket, TuningParam);
-		_Other -> 
+		_Other ->
 		    ?DEBUG_LOG("Can't tune a db of type ~p yet", [_Other]),
 		    {error, db_type_unsupported_for_tuning}
 	    end

@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% File    : medici_port_sup.erl
 %%% Author  : Jim McCoy <>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created :  6 May 2009 by Jim McCoy <>
 %%%-------------------------------------------------------------------
@@ -35,13 +35,13 @@ start_link(StartArgs) ->
 %% Func: init(Args) -> {ok,  {SupFlags,  [ChildSpec]}} |
 %%                     ignore                          |
 %%                     {error, Reason}
-%% Description: Whenever a supervisor is started using 
-%% supervisor:start_link/[2,3], this function is called by the new process 
-%% to find out about restart strategy, maximum restart frequency and child 
+%% Description: Whenever a supervisor is started using
+%% supervisor:start_link/[2,3], this function is called by the new process
+%% to find out about restart strategy, maximum restart frequency and child
 %% specifications.
 %%--------------------------------------------------------------------
 init(StartArgs) ->
-    PortManager = [{medici_port_srv, 
+    PortManager = [{medici_port_srv,
 		    {medici_port_srv, start_link, StartArgs},
 		    permanent,
 		    2000,

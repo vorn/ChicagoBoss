@@ -3,9 +3,9 @@
 %%% @author    Roberto Saccon <rsaccon@gmail.com> [http://rsaccon.com]
 %%% @author    Evan Miller <emmiller@gmail.com>
 %%% @copyright 2008 Roberto Saccon, Evan Miller
-%%% @doc 
+%%% @doc
 %%% Template language scanner
-%%% @end  
+%%% @end
 %%%
 %%% The MIT License
 %%%
@@ -35,7 +35,7 @@
 -author('rsaccon@gmail.com').
 -author('emmiller@gmail.com').
 
--export([scan/1]). 
+-export([scan/1]).
 
 
 %%====================================================================
@@ -58,42 +58,42 @@ scan([], Scanned, _, in_text) ->
                     ({identifier, Pos, String}) ->
                         RevString = lists:reverse(String),
                         Keywords = [
-                            "autoescape", "endautoescape", 
+                            "autoescape", "endautoescape",
 
-                            "block", "endblock", 
+                            "block", "endblock",
 
-                            "comment", "endcomment", 
+                            "comment", "endcomment",
 
                             %TODO "csrf_token",
-                            
-                            "cycle", 
-                            
-                            "extends", 
+
+                            "cycle",
+
+                            "extends",
 
                             "filter", "endfilter",
 
                             "firstof",
 
-                            "for", "in", "empty", "endfor", 
+                            "for", "in", "empty", "endfor",
 
-                            "if", "else", "endif", "not", "or", "and", 
+                            "if", "else", "endif", "not", "or", "and",
 
-                            %TODO "ifchanged", 
-                            
-                            "ifequal", "endifequal", 
+                            %TODO "ifchanged",
+
+                            "ifequal", "endifequal",
 
                             "ifnotequal", "endifnotequal",
 
                             "include", "only",
 
-                            "now", 
+                            "now",
 
-                            %TODO "regroup", 
-                            
-                            "spaceless", "endspaceless", 
-                            
+                            %TODO "regroup",
+
+                            "spaceless", "endspaceless",
+
                             "ssi", "parsed",
-                            
+
                             "templatetag", "openblock", "closeblock", "openvariable", "closevariable", "openbrace", "closebrace", "opencomment", "closecomment",
 
                             % "url", - implemented as custom tag
@@ -101,9 +101,9 @@ scan([], Scanned, _, in_text) ->
                             "widthratio",
 
                             "call", "with", "endwith",
-                            
+
                             "trans", "blocktrans", "endblocktrans", "noop"
-                        ], 
+                        ],
                         Type = case lists:member(RevString, Keywords) of
                             true ->
                                 list_to_atom(RevString ++ "_keyword");
@@ -111,8 +111,8 @@ scan([], Scanned, _, in_text) ->
                                 identifier
                         end,
                         {Type, Pos, list_to_atom(RevString)};
-                    ({Category, Pos, String}) when  Category =:= string; 
-                                                    Category =:= string_literal; 
+                    ({Category, Pos, String}) when  Category =:= string;
+                                                    Category =:= string_literal;
                                                     Category =:= number_literal ->
                         {Category, Pos, lists:reverse(String)};
                     (Other) -> Other
@@ -143,11 +143,11 @@ scan("#}" ++ T, Scanned, {Row, Column}, {in_comment, "#}"}) ->
     scan(T, Scanned, {Row, Column + length("#}")}, in_text);
 
 scan("<!--{%" ++ T, Scanned, {Row, Column}, in_text) ->
-    scan(T, [{open_tag, {Row, Column}, '<!--{%'} | Scanned], 
+    scan(T, [{open_tag, {Row, Column}, '<!--{%'} | Scanned],
         {Row, Column + length("<!--{%")}, {in_code, "%}-->"});
 
 scan("{%" ++ T, Scanned, {Row, Column}, in_text) ->
-    scan(T, [{open_tag, {Row, Column}, '{%'} | Scanned], 
+    scan(T, [{open_tag, {Row, Column}, '{%'} | Scanned],
         {Row, Column + length("{%")}, {in_code, "%}"});
 
 scan([_ | T], Scanned, {Row, Column}, {in_comment, Closer}) ->
@@ -199,18 +199,18 @@ scan([H | T], Scanned, {Row, Column}, {in_single_quote, Closer}) ->
 
 
 scan("}}-->" ++ T, Scanned, {Row, Column}, {_, "}}-->"}) ->
-    scan(T, [{close_var, {Row, Column}, '}}-->'} | Scanned], 
+    scan(T, [{close_var, {Row, Column}, '}}-->'} | Scanned],
         {Row, Column + length("}}-->")}, in_text);
 
 scan("}}" ++ T, Scanned, {Row, Column}, {_, "}}"}) ->
     scan(T, [{close_var, {Row, Column}, '}}'} | Scanned], {Row, Column + 2}, in_text);
 
 scan("%}-->" ++ T, Scanned, {Row, Column}, {_, "%}-->"}) ->
-    scan(T, [{close_tag, {Row, Column}, '%}-->'} | Scanned], 
+    scan(T, [{close_tag, {Row, Column}, '%}-->'} | Scanned],
         {Row, Column + length("%}-->")}, in_text);
 
 scan("%}" ++ T, Scanned, {Row, Column}, {_, "%}"}) ->
-    scan(T, [{close_tag, {Row, Column}, '%}'} | Scanned], 
+    scan(T, [{close_tag, {Row, Column}, '%}'} | Scanned],
         {Row, Column + 2}, in_text);
 
 scan("==" ++ T, Scanned, {Row, Column}, {_, Closer}) ->

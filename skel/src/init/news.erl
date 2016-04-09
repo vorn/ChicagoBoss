@@ -39,7 +39,7 @@ init() ->
 %            (deleted, OldUser) ->
 %                ok
 %        end),
-%    
+%
 %    boss_news:watch_set("forum_replies",
 %        fun
 %            (created, Reply) ->
@@ -62,7 +62,7 @@ init() ->
 %                end;
 %            (_ _) -> ok
 %        end),
-%    
+%
 %    boss_news:watch_set("forum_categories",
 %        fun
 %            (created, NewCategory) ->
@@ -75,7 +75,7 @@ init() ->
 %        end),
 %
 %    boss_news:watch("forum_category-*.is_deleted",
-%        fun 
+%        fun
 %            (ForumCategory, 'is_deleted', false, true) ->
 %                ;
 %            (ForumCategory, 'is_deleted', true, false) ->

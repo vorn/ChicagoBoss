@@ -14,13 +14,13 @@
     socket/1, recv_from_socket/3
 ]).
 
-init(Req) -> 
+init(Req) ->
     Req.
 
-request_method(Req) -> 
+request_method(Req) ->
     Req:get(method).
 
-path(Req) -> 
+path(Req) ->
     RawPath = Req:get(raw_path),
     {Path, _, _} = mochiweb_util:urlsplit_path(RawPath),
     Path.
@@ -28,7 +28,7 @@ path(Req) ->
 uri(Req) ->
     Req:get(raw_path).
 
-peer_ip(Req) -> 
+peer_ip(Req) ->
     case Req:get(socket) of
         false -> {127, 0, 0, 1};
         Socket ->
@@ -36,7 +36,7 @@ peer_ip(Req) ->
             IP
     end.
 
-peer_port(Req) -> 
+peer_port(Req) ->
     Socket = Req:get(socket),
     {ok, {_IP, Port}} = mochiweb_socket:peername(Socket),
     Port.
@@ -80,15 +80,15 @@ post_params(Req) ->
 request_body(Req) ->
     Req:recv_body().
 
-socket(Req) -> 	
+socket(Req) ->
     Req:get(socket).
 
-recv_from_socket(Length, Timeout, Req) -> 
+recv_from_socket(Length, Timeout, Req) ->
     Socket = socket(Req),
     case gen_tcp:recv(Socket, Length, Timeout) of
-        {ok, Data} -> 
+        {ok, Data} ->
             put(mochiweb_request_recv, true),
             Data;
-        _Other -> 
+        _Other ->
             exit(normal)
     end.

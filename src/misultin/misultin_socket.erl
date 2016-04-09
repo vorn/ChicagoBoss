@@ -2,7 +2,7 @@
 % MISULTIN - Socket
 %
 % >-|-|-(°>
-% 
+%
 % Copyright (C) 2010, Roberto Ostinelli <roberto@ostinelli.net>, Sean Hinde.
 % All rights reserved.
 %
@@ -10,7 +10,7 @@
 % <http://www.trapexit.org/A_fast_web_server_demonstrating_some_undocumented_Erlang_features>
 %
 % BSD License
-% 
+%
 % Redistribution and use in source and binary forms, with or without modification, are permitted provided
 % that the following conditions are met:
 %
@@ -129,7 +129,7 @@ accept(ListenSocket, ssl) ->
 	catch
 		error:{badmatch, {error, Reason}} ->
 			{error, Reason}
-	end.					
+	end.
 
 % socket controlling process
 controlling_process(Sock, Pid, http) -> gen_tcp:controlling_process(Sock, Pid);
@@ -167,7 +167,7 @@ recv(Sock, Len, RecvTimeout, ssl) -> ssl:recv(Sock, Len, RecvTimeout).
 % socket send
 send(Sock, Data, http) -> send(Sock, Data, fun gen_tcp:send/2);
 send(Sock, Data, ssl) -> send(Sock, Data, fun ssl:send/2);
-send(Sock, Data, F) -> 
+send(Sock, Data, F) ->
 	?LOG_DEBUG("sending data: ~p", [Data]),
 	case F(Sock, Data) of
 		ok ->

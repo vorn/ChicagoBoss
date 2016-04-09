@@ -22,7 +22,7 @@ start(Options) ->
 stop() ->
     ok.
 
-reload(Pid) ->	
+reload(Pid) ->
     gen_server:call(Pid, reload).
 
 route(Pid, Url) ->

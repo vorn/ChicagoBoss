@@ -30,7 +30,7 @@
 
 -include("medici.hrl").
 
--record(state, {port=nil, 
+-record(state, {port=nil,
 		options=[],
 		pid=0,
 	        log_match,
@@ -77,8 +77,8 @@ handle_call({optimize, TuningOpts}, _From, State) ->
 	false ->
 	    NewState = State#state{options=State#state.options ++ {tuning_opts, TuningOpts}};
 	_ ->
-	    NewState = State#state{options=lists:keyreplace(tuning_opts, 1, 
-							    State#state.options, 
+	    NewState = State#state{options=lists:keyreplace(tuning_opts, 1,
+							    State#state.options,
 							    {tuning_opts, TuningOpts})
 				  }
     end,
@@ -96,7 +96,7 @@ handle_call({restart}, _From, State) ->
 	    {reply, ok, NewState};
 	ErrorMessage ->
 	    {reply, ErrorMessage, State}
-    end;    
+    end;
 handle_call({stop}, _From, State) ->
     {stop, asked_to_stop, State}.
 

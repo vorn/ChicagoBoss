@@ -83,18 +83,18 @@ save_record(_, Record) when is_tuple(Record) ->
 pack_record(RecordWithId, Type) ->
     % metadata string stores the data types, <Data Type><attribute name>
     {Columns, MetadataString} = lists:mapfoldl(fun
-            (Attr, Acc) -> 
+            (Attr, Acc) ->
                 Val = RecordWithId:Attr(),
                 MagicLetter = case Val of
                     _Val when is_list(_Val) ->    "L";
                     {_, _, _} ->                  "T"; % time
                     {{_, _, _}, {_, _, _}} ->     "T";
                     _Val when is_binary(_Val) ->  "B";
-                    _Val when is_integer(_Val) -> "I"; 
+                    _Val when is_integer(_Val) -> "I";
                     _Val when is_float(_Val) ->   "F";
                     _Val when is_boolean(_Val) -> "O"
                 end,
-                {{attribute_to_colname(Attr), pack_value(Val)}, 
+                {{attribute_to_colname(Attr), pack_value(Val)},
                     lists:concat([Attr, MagicLetter, Acc])}
         end, [], RecordWithId:attribute_names()),
     [{attribute_to_colname('_type'), list_to_binary(atom_to_list(Type))},
@@ -109,7 +109,7 @@ extract_metadata(Record, _Type) ->
     MetadataString = proplists:get_value(attribute_to_colname('_metadata'), Record),
     case MetadataString of
         undefined -> [];
-        Val when is_binary(Val) -> 
+        Val when is_binary(Val) ->
             parse_metadata_string(binary_to_list(Val))
     end.
 

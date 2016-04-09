@@ -6,7 +6,7 @@
 
 -export([
         is_loaded/2,
-        lookup/3, 
+        lookup/3,
         fun_for/2,
         reload/2,
         reload_all/1

@@ -13,9 +13,9 @@ send_template(Application, Action, Args) ->
     case apply(Controller, Action, Args) of
         {ok, FromAddress, ToAddress, HeaderFields} ->
             send_message(Application, FromAddress, ToAddress, Action, HeaderFields, [], []);
-        {ok, FromAddress, ToAddress, HeaderFields, Variables} -> 
+        {ok, FromAddress, ToAddress, HeaderFields, Variables} ->
             send_message(Application, FromAddress, ToAddress, Action, HeaderFields, Variables, []);
-        {ok, FromAddress, ToAddress, HeaderFields, Variables, Attachments} -> 
+        {ok, FromAddress, ToAddress, HeaderFields, Variables, Attachments} ->
             send_message(Application, FromAddress, ToAddress, Action, HeaderFields, Variables, Attachments);
         nevermind ->
             ok
@@ -28,7 +28,7 @@ send(FromAddress, ToAddress, Subject, Body) ->
     MessageHeader = build_message_header([
             {"Subject", Subject},
             {"To", ToAddress},
-            {"From", FromAddress}], "text/plain"), 
+            {"From", FromAddress}], "text/plain"),
     gen_server:call(boss_mail, {deliver, FromAddress, ToAddress, fun() -> [MessageHeader, "\r\n", Body] end}).
 
 send_message(App, FromAddress, ToAddress, Action, HeaderFields, Variables, Attachments) ->
@@ -89,7 +89,7 @@ build_message_body(App, Action, Variables, ContentLanguage) ->
                     Boundary = smtp_util:generate_message_boundary(),
                     {"multipart/alternative; boundary=\""++Boundary++"\"",
                         render_multipart_view(
-                            [{"text/plain", TextView}, 
+                            [{"text/plain", TextView},
                                 {"text/html", HtmlView}], Boundary)}
             end
     end.
@@ -114,9 +114,9 @@ render_multipart_view(Parts, Boundary) ->
 render_multipart_view1([], Boundary) ->
     ["--", Boundary, "--"];
 render_multipart_view1([{FileName, MimeType, Body}|Rest], Boundary) ->
-    ["--", Boundary, 
-        "\r\n", "Content-Type: ", MimeType, 
-        "\r\n", "Content-Disposition: attachment; filename=", FileName, 
+    ["--", Boundary,
+        "\r\n", "Content-Type: ", MimeType,
+        "\r\n", "Content-Disposition: attachment; filename=", FileName,
         "\r\n", "Content-Transfer-Encoding: base64",
         "\r\n\r\n",
         wrap_to_76(base64:encode(erlang:iolist_to_binary(Body))), "\r\n", render_multipart_view1(Rest, Boundary)];

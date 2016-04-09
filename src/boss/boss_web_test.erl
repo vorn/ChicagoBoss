@@ -14,7 +14,7 @@ start([Adapter]) ->
 
 bootstrap_test_env(Application, Adapter) ->
     AdapterMod = list_to_atom("boss_db_adapter_"++Adapter),
-    RouterSupPid = boss_router:start([{application, Application}, 
+    RouterSupPid = boss_router:start([{application, Application},
             {controllers, boss_files:web_controller_list(Application)}]),
     boss_db:start([{adapter, AdapterMod}]),
     boss_session:start(),
@@ -26,7 +26,7 @@ bootstrap_test_env(Application, Adapter) ->
     boss_mail:start([{driver, boss_mail_driver_mock}]),
     TranslatorSupPid = boss_translator:start([{application, Application}]),
     boss_load:load_all_modules(Application),
-    #boss_app_info{ 
+    #boss_app_info{
         application = Application,
         base_url = "",
         watches = [],
@@ -81,7 +81,7 @@ post_request(Url, Headers, Contents, Assertions, Continuations) ->
 
 %% @spec follow_link(LinkName, Response, Assertions, Continuations) -> [{NumPassed, ErrorMessages}]
 %% @doc This test looks for a link labeled `LinkName' in `Response' and issues
-%% an HTTP GET request to the associated URL. The label may be an "alt" attribute of a 
+%% an HTTP GET request to the associated URL. The label may be an "alt" attribute of a
 %% hyperlinked &amp;lt;img&amp;gt; tag.
 follow_link(LinkName, {_, Uri, _, ParseTree} = _Response, Assertions, Continuations) ->
     follow_link1(LinkName, Uri, ParseTree, Assertions, Continuations);
@@ -101,12 +101,12 @@ follow_redirect({302, _, Headers, _} = _Response, Assertions, Continuations) ->
 
 %% @spec submit_form(FormName, FormValues::proplist(), Response, Assertions, Continuations) -> [{NumPassed, ErrorMessages}]
 %% @doc This test inspects `Response' for an HTML form with a "name" attribute equal to `FormName',
-%% and submits it using `FormValues', a proplist with keys equal to the labels of form fields. 
+%% and submits it using `FormValues', a proplist with keys equal to the labels of form fields.
 %% (So all visible form fields should be labeled with a &amp;lt;label&amp;gt; HTML tag!)
 %% If a particular value is not specified, the form's default value is used.
 submit_form(FormName, FormValues, {_, Uri, _, ParseTree} = _Response, Assertions, Continuations) ->
     case find_form_named(FormName, ParseTree) of
-        undefined -> 
+        undefined ->
             {0, ["No form to submit!"]};
         {Method, Action, InputFields, InputLabels} ->
             FormAction = case Action of undefined -> Uri; Action -> binary_to_list(Action) end,
@@ -136,7 +136,7 @@ read_email(ToAddress, Subject, Assertions, Continuations) ->
 
 follow_link1(LinkName, ThisUrl, ParseTree, Assertions, Continuations) ->
     case find_link_with_text(LinkName, ParseTree) of
-        undefined -> 
+        undefined ->
             {0, ["No link to follow!"]};
         Url ->
             AbsPath = case parse_url(Url) of
@@ -153,8 +153,8 @@ parse_email_body(<<"text">>, <<"plain">>, Body) ->
     {Body, []};
 parse_email_body(<<"text">>, <<"html">>, Body) ->
     {[], parse_html_email_body(Body)};
-parse_email_body(<<"multipart">>, <<"alternative">>, 
-    [{<<"text">>, <<"plain">>, _, _, TextBody}, 
+parse_email_body(<<"multipart">>, <<"alternative">>,
+    [{<<"text">>, <<"plain">>, _, _, TextBody},
         {<<"text">>, <<"html">>, _, _, HtmlBody}]) ->
     {TextBody, parse_html_email_body(HtmlBody)}.
 
@@ -316,7 +316,7 @@ post_request_loop(AppInfo) ->
             erlang:put(mochiweb_request_body, Body),
             erlang:put(mochiweb_request_body_length, length(Body)),
             erlang:put(mochiweb_request_post, mochiweb_util:parse_qs(Body)),
-            Req = make_request('POST', Uri, 
+            Req = make_request('POST', Uri,
                 [{"Content-Encoding", "application/x-www-form-urlencoded"} | Headers]),
             Result = boss_web_controller:process_request(AppInfo, Req, testing, Uri, undefined),
             From ! {self(), Uri, Result};
